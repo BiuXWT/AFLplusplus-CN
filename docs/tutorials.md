@@ -1,7 +1,7 @@
 # Tutorials
 
 If you are a total newbie, try this guide:
-如果你是个完全的新手，试试这个指南：
+如果你是个新手，试试这个指南：
 
 * [https://github.com/alex-maleno/Fuzzing-Module](https://github.com/alex-maleno/Fuzzing-Module)
 
@@ -25,7 +25,7 @@ training, then we can highly recommend the following:
 * [https://github.com/antonio-morales/Fuzzing101](https://github.com/antonio-morales/Fuzzing101)
 
 Here is a good forkflow description (and tutorial) for qemu_mode:
-这是一个关于 qemu_mode 的良好工作流程描述（和教程）：
+这是一个关于 qemu_mode 的工作流程描述（和教程）：
 
 
 * [https://airbus-seclab.github.io/AFLplusplus-blogpost/](https://airbus-seclab.github.io/AFLplusplus-blogpost/)

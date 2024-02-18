@@ -1,67 +1,87 @@
 # The afl-fuzz approach
+fuzz-方法
 
 AFL++ is a brute-force fuzzer coupled with an exceedingly simple but rock-solid
 instrumentation-guided genetic algorithm. It uses a modified form of edge
 coverage to effortlessly pick up subtle, local-scale changes to program control
 flow.
+AFL++ 是一个暴力破解的模糊器，配合一个极其简单但坚如磐石的插桩引导的遗传算法。它使用一种修改过的边缘覆盖形式，能够轻松捕获到程序控制流的微妙的局部规模变化。
 
 Note: If you are interested in a more current up-to-date deep dive how AFL++
 works then we commend this blog post:
 [https://blog.ritsec.club/posts/afl-under-hood/](https://blog.ritsec.club/posts/afl-under-hood/)
+注意:如果您对afl++的最新深入了解感兴趣
+那么我们推荐这篇博客文章:[https://blog.ritsec.club/posts/afl-under-hood/](https://blog.ritsec.club/posts/afl-under-hood/)
+
 
 Simplifying a bit, the overall algorithm can be summed up as:
+简化一下，整个算法可以总结为：
 
 1) Load user-supplied initial test cases into the queue.
+将用户提供的初始测试用例加载到队列中。
 
 2) Take the next input file from the queue.
+从队列中取出下一个输入文件。
 
 3) Attempt to trim the test case to the smallest size that doesn't alter the
    measured behavior of the program.
+尝试将测试用例裁剪到不改变程序测量行为的最小大小。
 
 4) Repeatedly mutate the file using a balanced and well-researched variety of
    traditional fuzzing strategies.
+使用平衡且研究充分的各种传统模糊策略，反复对文件进行突变。
 
 5) If any of the generated mutations resulted in a new state transition recorded
    by the instrumentation, add mutated output as a new entry in the queue.
+如果任何生成的突变导致插桩记录的新状态转换，将突变输出添加为队列中的新条目。
 
 6) Go to 2.
 
 The discovered test cases are also periodically culled to eliminate ones that
 have been obsoleted by newer, higher-coverage finds; and undergo several other
 instrumentation-driven effort minimization steps.
+发现的测试用例也会定期被剔除，以消除那些已经被新的、覆盖率更高的发现所取代的用例；并且还会经历几个其他的由插桩驱动的努力最小化步骤。
 
 As a side result of the fuzzing process, the tool creates a small,
 self-contained corpus of interesting test cases. These are extremely useful for
 seeding other, labor- or resource-intensive testing regimes - for example, for
 stress-testing browsers, office applications, graphics suites, or closed-source
 tools.
+作为模糊处理过程的一个副产品，该工具会创建一个小型的、自包含的有趣测试用例语料库。这些对于为其他劳动或资源密集型的测试制度提供种子非常有用 - 例如，用于压力测试浏览器、办公应用、图形套件或闭源工具。
 
 The fuzzer is thoroughly tested to deliver out-of-the-box performance far
 superior to blind fuzzing or coverage-only tools.
+这个模糊器经过了彻底的测试，其开箱即用的性能远超于盲目模糊或仅覆盖工具。
 
 ## Understanding the status screen
 
 This section provides an overview of the status screen - plus tips for
 troubleshooting any warnings and red text shown in the UI.
+这一部分将提供状态屏幕的概述，以及解决用户界面中显示的任何警告和红色文本的提示。
 
 For the general instruction manual, see [README.md](README.md).
+通用的手册参照[README.md](README.md).
 
 ### A note about colors
 
 The status screen and error messages use colors to keep things readable and
 attract your attention to the most important details. For example, red almost
 always means "consult this doc" :-)
+状态屏幕和错误消息使用颜色来保持内容的可读性，并吸引您注意最重要的细节。例如，红色几乎总是意味着“请查阅这个文档” :-)
 
 Unfortunately, the UI will only render correctly if your terminal is using
 traditional un*x palette (white text on black background) or something close to
 that.
+不幸的是，只有当您的终端使用传统的 un*x 调色板（白色文本在黑色背景上）或者接近这样的设置时，用户界面才能正确地呈现。如果您的终端设置与此不同，可能会影响到界面的正确显示
 
 If you are using inverse video, you may want to change your settings, say:
-
+如果你正在使用反向视频，你可能想要改变你的设置，比如说：
 - For GNOME Terminal, go to `Edit > Profile` preferences, select the "colors"
   tab, and from the list of built-in schemes, choose "white on black".
+- 对于 GNOME 终端，转到 `Edit > Profile` 首选项，选择 "colors" 标签页，在内置方案列表中选择 "white on black"。
 - For the MacOS X Terminal app, open a new window using the "Pro" scheme via the
   `Shell > New Window` menu (or make "Pro" your default).
+- 对于 MacOS X 的 Terminal 应用，通过 `Shell > New Window` 菜单使用 "Pro" 方案打开一个新窗口（或者将 "Pro" 设为默认）。
 
 Alternatively, if you really like your current colors, you can edit config.h to
 comment out USE_COLORS, then do `make clean all`.
@@ -72,6 +92,7 @@ side effects - sorry about that.
 With that out of the way, let's talk about what's actually on the screen...
 
 ### The status bar
+状态条
 
 ```
 american fuzzy lop ++3.01a (default) [fast] {0}
@@ -83,6 +104,7 @@ AFL++. Next to the version is the banner, which, if not set with -T by hand,
 will either show the binary name being fuzzed, or the -M/-S main/secondary name
 for parallel fuzzing. Second to last is the power schedule mode being run
 (default: fast). Finally, the last item is the CPU id.
+上面的一行显示了 `afl-fuzz` 运行的模式(普通:"american fuzzy lop"，crash查找模式:"peruvian rabbit mode")和afl++的版本。紧挨着版本号的是横幅，如果没有手动设置-T，就会显示要进行模糊测试的二进制程序名称，或者显示并行模糊测试的-M/-S主/次程序名称。倒数第二是正在运行的电源调度模式(默认:fast)。最后一项是CPU id。
 
 ### Process timing
 
@@ -99,11 +121,13 @@ This section is fairly self-explanatory: it tells you how long the fuzzer has
 been running and how much time has elapsed since its most recent finds. This is
 broken down into "paths" (a shorthand for test cases that trigger new execution
 patterns), crashes, and hangs.
+这部分的内容不言自明:它会告诉你模糊器已经运行了多长时间，以及从最近一次发现到现在已经过去了多长时间。这被分解为“路径”(触发新执行模式的测试用例的简写)、崩溃和挂起。
 
 When it comes to timing: there is no hard rule, but most fuzzing jobs should be
 expected to run for days or weeks; in fact, for a moderately complex project,
 the first pass will probably take a day or so. Every now and then, some jobs
 will be allowed to run for months.
+在测试时间方面，没有硬性规定，但大多数模糊测试作业都应该运行数天或数周;事实上，对于一个适度复杂的项目，第一步可能需要一天左右的时间。时不时的应该让一些测试可以运行数月
 
 There's one important thing to watch out for: if the tool is not finding new
 paths within several minutes of starting, you're probably not invoking the
@@ -112,12 +136,14 @@ thrown at it; other possible explanations are that the default memory limit
 (`-m`) is too restrictive and the program exits after failing to allocate a
 buffer very early on; or that the input files are patently invalid and always
 fail a basic header check.
+有一件重要的事情要注意:如果该工具不能在启动几分钟内找到新路径，则可能没有正确调用目标二进制文件，并且它永远无法解析扔给它的输入文件;其他可能的解释是，默认的内存限制(' -m ')限制太大，程序在很早就分配缓冲区失败后退出;或者输入文件明显无效，基本的头文件检查总是失败。
 
 If there are no new paths showing up for a while, you will eventually see a big
 red warning in this section, too :-)
+如果暂时没有新路径出现，您最终将在该部分中看到一个红色的大警告😃
 
 ### Overall results
-
+总体结果
 ```
   +-----------------------+
   |  cycles done : 0      |
@@ -135,12 +161,18 @@ The first field in this section gives you the count of queue passes done so far
 
 As noted earlier, the first pass can take a day or longer, so sit back and
 relax.
+这部分的第一个字段给出了到目前为止完成的队列传递次数
+ - 也就是说，模糊测试器对到目前为止发现的所有有趣的测试用例进行了多少次的复查，对它们进行了模糊处理，
+ 并回到了最开始的地方。每个模糊测试会话都应该至少完成一次循环；理想情况下，应该运行的时间要长得多。
+如前所述，第一次传递可能需要一天或更长时间，所以坐下来放松一下。
 
 To help make the call on when to hit `Ctrl-C`, the cycle counter is color-coded.
 It is shown in magenta during the first pass, progresses to yellow if new finds
 are still being made in subsequent rounds, then blue when that ends - and
 finally, turns green after the fuzzer hasn't been seeing any action for a longer
 while.
+为了帮助你决定何时按下 `Ctrl-C`，循环计数器是用颜色编码的。在第一轮中，它显示为洋红色，
+如果在后续轮次中仍然发现新的内容，它会变为黄色，然后在那结束时变为蓝色 - 最后，在模糊测试器长时间没有任何动作后，它会变为绿色。
 
 The remaining fields in this part of the screen should be pretty obvious:
 there's the number of test cases ("paths") discovered so far, and the number of

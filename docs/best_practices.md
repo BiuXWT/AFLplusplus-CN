@@ -21,6 +21,7 @@
 
 To learn how to fuzz a target if source code is available, see
 [fuzzing_in_depth.md](fuzzing_in_depth.md).
+要了解如何在源代码可用的情况下对目标进行模糊测试，请参阅[fuzzing_in_depth.md](fuzzing_in_depth.md).
 
 ### Fuzzing a target with dlopen instrumented libraries
 
@@ -43,22 +44,27 @@ Note that this is not an issue if you use the inferiour `afl-gcc-fast`,
 instrumentation.
 
 ### Fuzzing a binary-only target
+对二进制进行fuzz
 
 For a comprehensive guide, see
 [fuzzing_binary-only_targets.md](fuzzing_binary-only_targets.md).
 
 ### Fuzzing a GUI program
+对GUI进行fuzz
 
 If the GUI program can read the fuzz data from a file (via the command line, a
 fixed location or via an environment variable) without needing any user
 interaction, then it would be suitable for fuzzing.
+如果GUI程序不需要任何用户交互就能(通过命令行、固定位置或环境变量)从文件中读取模糊测试数据，那么它就适合进行模糊测试。
 
 Otherwise, it is not possible without modifying the source code - which is a
 very good idea anyway as the GUI functionality is a huge CPU/time overhead for
 the fuzzing.
+否则，不修改源代码是不可能的 — — 无论如何这都是一个很好的主意，因为GUI功能对模糊测试来说是一个巨大的CPU/时间开销。
 
 So create a new `main()` that just reads the test case and calls the
 functionality for processing the input that the GUI program is using.
+因此，创建一个新的`main()`，它只读取测试用例，并调用该功能来处理GUI程序正在使用的输入。
 
 ### Fuzzing a network service
 对网络服务进行模糊测试
@@ -144,29 +150,38 @@ target that ignores 10% of the edges.
 
 With instability, you basically have a partial coverage loss on an edge, with
 ignored functions you have a full loss on that edges.
+在不稳定时,基本上是在某个边上丢失部分覆盖率;若是忽略某个函数,则这条边的覆盖率将会全部丢失
 
 There are functions that are unstable, but also provide value to coverage, e.g.,
 init functions that use fuzz data as input. If, however, a function that has
 nothing to do with the input data is the source of instability, e.g., checking
 jitter, or is a hash map function etc., then it should not be instrumented.
+即使有一些函数不稳定,但也提供了覆盖率,例如使用模糊数据作为输入的初始化函数。然而，如果导致不稳定性的函数与输入数据无关，例如检查抖动或是哈希映射函数等，则不应进行插桩。
 
 To be able to exclude these functions (based on AFL++'s measured stability), the
 following process will allow to identify functions with variable edges.
+为了能够排除这些函数（基于AFL++的稳定性测量），以下过程将允许识别具有可变边缘的函数。
 
 Note that this is only useful for non-persistent targets!
 If a persistent target is unstable whereas when run non-persistent is fine,
 then this means that the target is keeping internal state, which is bad for
 fuzzing. Fuzz such targets **without** persistent mode.
+请注意，这只对非持久性目标有用！
+如果一个目标在non-persistent时是稳定的，而在persistent时是不稳定的，
+那么这意味着目标在保持内部状态，这对模糊测试是不利的。对这样的目标进行模糊测试时，**不要**使用persistent模式。
 
 Four steps are required to do this and it also requires quite some knowledge of
 coding and/or disassembly and is effectively possible only with `afl-clang-fast`
 `PCGUARD` and `afl-clang-lto` `LTO` instrumentation.
+要做到这一点需要四个步骤，而且还需要相当多的编程和/或反汇编知识，实际上只有在使用 `afl-clang-fast` 的 `PCGUARD` 和 `afl-clang-lto` 的 `LTO` 插桩时才可能实现。
 
   1. Instrument to be able to find the responsible function(s):
+  为了找到负责的函数，需要进行插桩：
 
      a) For LTO instrumented binaries, this can be documented during compile
         time, just set `export AFL_LLVM_DOCUMENT_IDS=/path/to/a/file`. This file
         will have one assigned edge ID and the corresponding function per line.
+     a) 对于 LTO 插桩的二进制文件，可以在编译时进行记录，只需设置 export AFL_LLVM_DOCUMENT_IDS=/path/to/a/file。这个文件将会有一个分配的边缘 ID 和每行对应的函数。 
 
      b) For PCGUARD instrumented binaries, it is much more difficult. Here you
         can either modify the `__sanitizer_cov_trace_pc_guard` function in
@@ -179,10 +194,12 @@ coding and/or disassembly and is effectively possible only with `afl-clang-fast`
         `__sanitizer_cov_trace_pc_guard_init` on start, check to which memory
         address the edge ID value is written, and set a write breakpoint to that
         address (`watch 0x.....`).
+      b) 对于 PCGUARD 插桩的二进制文件，这要困难得多。在这里，你可以修改 instrumentation/afl-llvm-rt.o.c 中的 __sanitizer_cov_trace_pc_guard 函数，如果 __afl_area_ptr[*guard] 中的 ID 是不稳定边缘 ID 的一个，就将回溯信息写入一个文件。（已经有示例代码）。然后重新编译和重新安装 llvm_mode 并重建你的目标。运行重新编译的目标与 afl-fuzz 一段时间，然后检查你写入回溯信息的文件。或者，你可以使用 gdb 在开始时挂钩 __sanitizer_cov_trace_pc_guard_init，检查边缘 ID 值被写入到哪个内存地址，并设置一个写入断点到那个地址（watch 0x.....）。
 
      c) In other instrumentation types, this is not possible. So just recompile
         with the two mentioned above. This is just for identifying the functions
         that have unstable edges.
+     c) 在其他插桩类型中，这是不可能的。所以只需用上述两种重新编译。这只是为了识别具有不稳定边缘的函数。
 
   2. Identify which edge ID numbers are unstable.
 
