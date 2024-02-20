@@ -32,6 +32,7 @@ Here is some information to get you started:
 
 * For an overview of the AFL++ documentation and a very helpful graphical guide,
   please visit [docs/README.md](docs/README.md).
+  总览和界面的介绍参照[docs/README.md](docs/README.md).
 * To get you started with tutorials, go to
   [docs/tutorials.md](docs/tutorials.md).
 * For releases, see the
@@ -52,6 +53,7 @@ Here is some information to get you started:
 
 To have AFL++ easily available with everything compiled, pull the image directly
 from the Docker Hub (available for both x86_64 and arm64):
+想要获得编译好的afl++的所有内容,直接从docker hub拉取:
 
 ```shell
 docker pull aflplusplus/aflplusplus
@@ -61,12 +63,14 @@ docker run -ti -v /location/of/your/target:/src aflplusplus/aflplusplus
 This image is automatically published when a push to the stable branch happens
 (see [branches](#branches)). If you use the command above, you will find your
 target source code in `/src` in the container.
+每当stable分支有提交,这个镜像会自动发布.使用上面的命令,你会在容器的`/src`看到你的项目源码
 
 Note: you can also pull `aflplusplus/aflplusplus:dev` which is the most current
 development state of AFL++.
 
 To build AFL++ yourself - *which we recommend* - continue at
 [docs/INSTALL.md](docs/INSTALL.md).
+由你自己构建afl++,参照[docs/INSTALL.md](docs/INSTALL.md)
 
 ## Quick start: Fuzzing with AFL++
 
@@ -76,6 +80,7 @@ To build AFL++ yourself - *which we recommend* - continue at
 This is a quick start for fuzzing targets with the source code available. To
 read about the process in detail, see
 [docs/fuzzing_in_depth.md](docs/fuzzing_in_depth.md).
+这里是在源码可获取的情况下的快速入门,详细请参照[docs/fuzzing_in_depth.md](docs/fuzzing_in_depth.md).
 
 To learn about fuzzing other targets, see:
 * Binary-only targets:
@@ -86,9 +91,11 @@ To learn about fuzzing other targets, see:
   [docs/best_practices.md#fuzzing-a-gui-program](docs/best_practices.md#fuzzing-a-gui-program)
 
 Step-by-step quick start:
+快速入门步骤:
 
 1. Compile the program or library to be fuzzed using `afl-cc`. A common way to
    do this would be:
+  使用`afl-cc`编译程序或库,通常使用如下命令:
 
    ```
    CC=/path/to/afl-cc CXX=/path/to/afl-c++ ./configure --disable-shared
@@ -98,6 +105,7 @@ Step-by-step quick start:
 2. Get a small but valid input file that makes sense to the program. When
    fuzzing verbose syntax (SQL, HTTP, etc.), create a dictionary as described in
    [dictionaries/README.md](dictionaries/README.md), too.
+   获取一个对程序有意义的小但有效的输入文件。在对详细语法(SQL、HTTP等)进行模糊测试时，请按照[dictionaries/README.md](dictionaries/README.md)中的描述创建一个字典
 
 3. If the program reads from stdin, run `afl-fuzz` like so:
 
@@ -113,6 +121,7 @@ Step-by-step quick start:
 
 4. Investigate anything shown in red in the fuzzer UI by promptly consulting
    [docs/afl-fuzz_approach.md#understanding-the-status-screen](docs/afl-fuzz_approach.md#understanding-the-status-screen).
+   请及时查阅[docs/afl-fuzz_approach.md#understanding-the-status-screen](docs/afl-fuzz_approach.md#understanding-the-status-screen)文件，查看模糊器UI中红色显示的内容
 
 5. You will find found crashes and hangs in the subdirectories `crashes/` and
    `hangs/` in the `-o output_dir` directory. You can replay the crashes by
@@ -128,6 +137,7 @@ Step-by-step quick start:
    [docs/fuzzing_in_depth.md](docs/fuzzing_in_depth.md) document!
 
 ## Contact
+联系我们
 
 Questions? Concerns? Bug reports?
 

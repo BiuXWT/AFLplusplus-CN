@@ -1,0 +1,451 @@
+<!DOCTYPE html><html><head>
+      <title>README</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\anban\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.6.8\node_modules\@shd101wyy\mume\dependencies\katex\katex.min.css">
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      <style>
+      /**
+ * prism.js Github theme based on GitHub's theme.
+ * @author Sam Clarke
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #333;
+  background: none;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.4;
+
+  -moz-tab-size: 8;
+  -o-tab-size: 8;
+  tab-size: 8;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: .8em;
+  overflow: auto;
+  /* border: 1px solid #ddd; */
+  border-radius: 3px;
+  /* background: #fff; */
+  background: #f5f5f5;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal;
+  background: #f5f5f5;
+}
+
+.token.comment,
+.token.blockquote {
+  color: #969896;
+}
+
+.token.cdata {
+  color: #183691;
+}
+
+.token.doctype,
+.token.punctuation,
+.token.variable,
+.token.macro.property {
+  color: #333;
+}
+
+.token.operator,
+.token.important,
+.token.keyword,
+.token.rule,
+.token.builtin {
+  color: #a71d5d;
+}
+
+.token.string,
+.token.url,
+.token.regex,
+.token.attr-value {
+  color: #183691;
+}
+
+.token.property,
+.token.number,
+.token.boolean,
+.token.entity,
+.token.atrule,
+.token.constant,
+.token.symbol,
+.token.command,
+.token.code {
+  color: #0086b3;
+}
+
+.token.tag,
+.token.selector,
+.token.prolog {
+  color: #63a35c;
+}
+
+.token.function,
+.token.namespace,
+.token.pseudo-element,
+.token.class,
+.token.class-name,
+.token.pseudo-class,
+.token.id,
+.token.url-reference .token.variable,
+.token.attr-name {
+  color: #795da3;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.title,
+.token.title .token.punctuation {
+  font-weight: bold;
+  color: #1d3e81;
+}
+
+.token.list {
+  color: #ed6a43;
+}
+
+.token.inserted {
+  background-color: #eaffea;
+  color: #55a532;
+}
+
+.token.deleted {
+  background-color: #ffecec;
+  color: #bd2c00;
+}
+
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+
+/* JSON */
+.language-json .token.property {
+  color: #183691;
+}
+
+.language-markup .token.tag .token.punctuation {
+  color: #333;
+}
+
+/* CSS */
+code.language-css,
+.language-css .token.function {
+  color: #0086b3;
+}
+
+/* YAML */
+.language-yaml .token.atrule {
+  color: #63a35c;
+}
+
+code.language-yaml {
+  color: #183691;
+}
+
+/* Ruby */
+.language-ruby .token.function {
+  color: #333;
+}
+
+/* Markdown */
+.language-markdown .token.url {
+  color: #795da3;
+}
+
+/* Makefile */
+.language-makefile .token.symbol {
+  color: #795da3;
+}
+
+.language-makefile .token.variable {
+  color: #183691;
+}
+
+.language-makefile .token.builtin {
+  color: #0086b3;
+}
+
+/* Bash */
+.language-bash .token.keyword {
+  color: #0086b3;
+}
+
+/* highlight */
+pre[data-line] {
+  position: relative;
+  padding: 1em 0 1em 3em;
+}
+pre[data-line] .line-highlight-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  display: block;
+  width: 100%;
+}
+
+pre[data-line] .line-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: inherit 0;
+  margin-top: 1em;
+  background: hsla(24, 20%, 50%,.08);
+  background: linear-gradient(to right, hsla(24, 20%, 50%,.1) 70%, hsla(24, 20%, 50%,0));
+  pointer-events: none;
+  line-height: inherit;
+  white-space: pre;
+}
+
+pre[data-line] .line-highlight:before, 
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-start);
+  position: absolute;
+  top: .4em;
+  left: .6em;
+  min-width: 1em;
+  padding: 0 .5em;
+  background-color: hsla(24, 20%, 50%,.4);
+  color: hsl(24, 20%, 95%);
+  font: bold 65%/1.5 sans-serif;
+  text-align: center;
+  vertical-align: .3em;
+  border-radius: 999px;
+  text-shadow: none;
+  box-shadow: 0 1px white;
+}
+
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-end);
+  top: auto;
+  bottom: .4em;
+}html body{font-family:"Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ul,html body>ol{margin-bottom:16px}html body ul,html body ol{padding-left:2em}html body ul.no-list,html body ol.no-list{padding:0;list-style-type:none}html body ul ul,html body ul ol,html body ol ol,html body ol ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:bold;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:bold}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em !important;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::before,html body code::after{letter-spacing:-0.2em;content:"\00a0"}html body pre>code{padding:0;margin:0;font-size:.85em !important;word-break:normal;white-space:pre;background:transparent;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;font-size:.85em !important;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:before,html body pre tt:before,html body pre code:after,html body pre tt:after{content:normal}html body p,html body blockquote,html body ul,html body ol,html body dl,html body pre{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body pre,html body code{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview .pagebreak,.markdown-preview .newpage{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center !important}.markdown-preview:not([for="preview"]) .code-chunk .btn-group{display:none}.markdown-preview:not([for="preview"]) .code-chunk .status{display:none}.markdown-preview:not([for="preview"]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0}@media screen and (min-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{font-size:14px !important;padding:1em}}@media print{html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,0.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p,html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div{display:inline}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% -  300px);padding:2em calc(50% - 457px -  300px/2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+    </head>
+    <body for="html-export">
+      <div class="mume markdown-preview  ">
+      <h1 class="mume-header" id="high-performance-binary-only-instrumentation-for-afl-fuzz">High-performance binary-only instrumentation for afl-fuzz</h1>
+
+<p>For the general instruction manual, see <a href="../docs/README.md">docs/README.md</a>.</p>
+<h2 class="mume-header" id="1-introduction">1) Introduction</h2>
+
+<p>The code in this directory allows you to build a standalone feature that<br>
+leverages the QEMU &quot;user emulation&quot; mode and allows callers to obtain<br>
+instrumentation output for black-box, closed-source binaries. This mechanism can<br>
+be then used by afl-fuzz to stress-test targets that couldn&apos;t be built with<br>
+afl-cc.</p>
+<p>The usual performance cost is 2-5x, which is considerably better than seen so<br>
+far in experiments with tools such as DynamoRIO and PIN.</p>
+<p>The idea and much of the initial implementation comes from Andrew Griffiths.<br>
+The actual implementation on current QEMU (shipped as qemuafl) is from Andrea<br>
+Fioraldi. Special thanks to abiondo that re-enabled TCG chaining.</p>
+<h2 class="mume-header" id="2-how-to-use-qemu-mode">2) How to use QEMU mode</h2>
+
+<p>The feature is implemented with a patched QEMU. The simplest way to build it is<br>
+to run ./build_qemu_support.sh. The script will download, configure, and compile<br>
+the QEMU binary for you.</p>
+<p>QEMU is a big project, so this will take a while, and you may have to resolve a<br>
+couple of dependencies (most notably, you will definitely need libtool and<br>
+glib2-devel).</p>
+<p>Once the binaries are compiled, you can leverage the QEMU tool by calling<br>
+afl-fuzz and all the related utilities with <code>-Q</code> in the command line.</p>
+<p>In principle, if you set <code>CPU_TARGET</code> before calling ./build_qemu_support.sh,<br>
+you should get a build capable of running non-native binaries (say, you can try<br>
+<code>CPU_TARGET=arm</code>). This is also necessary for running 32-bit binaries on a<br>
+64-bit system (<code>CPU_TARGET=i386</code>). If you&apos;re trying to run QEMU on a different<br>
+architecture, you can also set <code>HOST</code> to the cross-compiler prefix to use (for<br>
+example <code>HOST=arm-linux-gnueabi</code> to use arm-linux-gnueabi-gcc).<br>
+Another common target is <code>CPU_TARGET=aarch64</code>.</p>
+<p>You can also compile statically-linked binaries by setting <code>STATIC=1</code>. This can<br>
+be useful when compiling QEMU on a different system than the one you&apos;re planning<br>
+to run the fuzzer on and is most often used with the <code>HOST</code> variable.</p>
+<p>Note: when targeting the i386 architecture, on some binaries the forkserver<br>
+handshake may fail due to the lack of reserved memory. Fix it with:</p>
+<pre data-role="codeBlock" data-info class="language-"><code>export QEMU_RESERVED_VA=0x1000000
+</code></pre><p>Note: if you want the QEMU helper to be installed on your system for all users,<br>
+you need to build it before issuing <code>make install</code> in the parent directory.</p>
+<p>If you want to specify a different path for libraries (e.g., to run an arm64<br>
+binary on x86_64) use <code>QEMU_LD_PREFIX</code>.</p>
+<h2 class="mume-header" id="3-deferred-initialization">3) Deferred initialization</h2>
+
+<p>As for LLVM mode (refer to<br>
+<a href="../instrumentation/README.llvm.md">instrumentation/README.llvm.md</a> for mode<br>
+details), QEMU mode supports the deferred initialization.</p>
+<p>This can be enabled by setting the environment variable <code>AFL_ENTRYPOINT</code> which<br>
+allows to move the forkserver to a different part, e.g., just before the file is<br>
+opened (e.g., way after command line parsing and config file loading, etc.)<br>
+which can be a huge speed improvement.</p>
+<p>For an example, see <a href="README.deferred_initialization_example.md">README.deferred_initialization_example.md</a>.</p>
+<h2 class="mume-header" id="4-persistent-mode">4) Persistent mode</h2>
+
+<p>AFL++&apos;s QEMU mode now supports also persistent mode for x86, x86_64, arm, and<br>
+aarch64 targets. This increases the speed by several factors, however, it is a<br>
+bit of work to set up - but worth the effort.</p>
+<p>For more information, see <a href="README.persistent.md">README.persistent.md</a>.</p>
+<h2 class="mume-header" id="5-snapshot-mode">5) Snapshot mode</h2>
+
+<p>As an extension to persistent mode, qemuafl can snapshot and restore the memory<br>
+state and brk(). For details, see <a href="README.persistent.md">README.persistent.md</a>.</p>
+<p>The environment variable that enables the ready to use snapshot mode is<br>
+<code>AFL_QEMU_SNAPSHOT</code> and takes a hex address as a value that is the snapshot<br>
+entry point.</p>
+<p>Snapshot mode can work restoring all the writeable pages, that is typically<br>
+slower than fork() mode but, on the other hand, it can scale better with<br>
+multicore. If the AFL++ snapshot kernel module is loaded, qemuafl will use it<br>
+and, in this case, the speed is better than fork() and also the scaling<br>
+capabilities.</p>
+<h2 class="mume-header" id="6-partial-instrumentation">6) Partial instrumentation</h2>
+
+<p>You can tell QEMU to instrument only a part of the address space.</p>
+<p>Just set <code>AFL_QEMU_INST_RANGES=A,B,C...</code>.</p>
+<p>The format of the items in the list is either a range of addresses like<br>
+0x123-0x321 or a module name like <a href="http://module.so">module.so</a> (that is matched in the mapped<br>
+object filename).</p>
+<p>Alternatively, you can tell QEMU to ignore part of an address space for<br>
+instrumentation.</p>
+<p>Just set <code>AFL_QEMU_EXCLUDE_RANGES=A,B,C...</code>.</p>
+<p>The format of the items on the list is the same as for <code>AFL_QEMU_INST_RANGES</code><br>
+and excluding ranges takes priority over any included ranges or <code>AFL_INST_LIBS</code>.</p>
+<h2 class="mume-header" id="7-comparecoverage">7) CompareCoverage</h2>
+
+<p>CompareCoverage is a sub-instrumentation with effects similar to laf-intel.</p>
+<p>You have to set <code>AFL_PRELOAD=/path/to/libcompcov.so</code> together with setting the<br>
+<code>AFL_COMPCOV_LEVEL</code> you want to enable it.</p>
+<p><code>AFL_COMPCOV_LEVEL=1</code> is to instrument comparisons with only immediate<br>
+values/read-only memory.</p>
+<p><code>AFL_COMPCOV_LEVEL=2</code> instruments all comparison instructions and memory<br>
+comparison functions when libcompcov is preloaded.</p>
+<p><code>AFL_COMPCOV_LEVEL=3</code> has the same effects of <code>AFL_COMPCOV_LEVEL=2</code> but enables<br>
+also the instrumentation of the floating-point comparisons on x86 and x86_64<br>
+(experimental).</p>
+<p>Integer comparison instructions are currently instrumented only on the x86,<br>
+x86_64, arm, and aarch64 targets.</p>
+<p>Recommended, but not as good as CMPLOG mode (see below).</p>
+<h2 class="mume-header" id="8-cmplog-mode">8) CMPLOG mode</h2>
+
+<p>Another new feature is CMPLOG, which is based on the Redqueen project. Here all<br>
+immediates in CMP instructions are learned and put into a dynamic dictionary and<br>
+applied to all locations in the input that reached that CMP, trying to solve and<br>
+pass it. This is a very effective feature and it is available for x86, x86_64,<br>
+arm, and aarch64.</p>
+<p>To enable it, you must pass on the command line of afl-fuzz:</p>
+<pre data-role="codeBlock" data-info class="language-"><code>-c /path/to/your/target
+</code></pre><h2 class="mume-header" id="9-wine-mode">9) Wine mode</h2>
+
+<p>AFL++ QEMU can use Wine to fuzz Win32 PE binaries. Use the <code>-W</code> flag of<br>
+afl-fuzz.</p>
+<p>Note that some binaries require user interaction with the GUI and must be<br>
+patched.</p>
+<p>For examples, look<br>
+<a href="https://github.com/andreafioraldi/WineAFLplusplusDEMO">here</a>.</p>
+<h2 class="mume-header" id="10-notes-on-linking">10) Notes on linking</h2>
+
+<p>The feature is supported only on Linux. Supporting BSD may amount to porting the<br>
+changes made to linux-user/elfload.c and applying them to bsd-user/elfload.c,<br>
+but I have not looked into this yet.</p>
+<p>The instrumentation follows only the .text section of the first ELF binary<br>
+encountered in the linking process. It does not trace shared libraries. In<br>
+practice, this means two things:</p>
+<ul>
+<li>
+<p>Any libraries you want to analyze <em>must</em> be linked statically into the<br>
+executed ELF file (this will usually be the case for closed-source apps).</p>
+</li>
+<li>
+<p>Standard C libraries and other stuff that is wasteful to instrument should be<br>
+linked dynamically - otherwise, AFL++ will have no way to avoid peeking into<br>
+them.</p>
+</li>
+</ul>
+<p>Setting <code>AFL_INST_LIBS=1</code> can be used to circumvent the .text detection logic<br>
+and instrument every basic block encountered.</p>
+<h2 class="mume-header" id="11-benchmarking">11) Benchmarking</h2>
+
+<p>If you want to compare the performance of the QEMU instrumentation with that of<br>
+afl-clang-fast compiled code against the same target, you need to build the<br>
+non-instrumented binary with the same optimization flags that are normally<br>
+injected by afl-clang-fast, and make sure that the bits to be tested are<br>
+statically linked into the binary. A common way to do this would be:</p>
+<pre data-role="codeBlock" data-info class="language-"><code>CFLAGS=&quot;-O3 -funroll-loops&quot; ./configure --disable-shared
+make clean all
+</code></pre><p>Comparative measurements of execution speed or instrumentation coverage will be<br>
+fairly meaningless if the optimization levels or instrumentation scopes don&apos;t<br>
+match.</p>
+<h2 class="mume-header" id="12-other-features">12) Other features</h2>
+
+<p>With <code>AFL_QEMU_FORCE_DFL</code>, you force QEMU to ignore the registered signal<br>
+handlers of the target.</p>
+<h2 class="mume-header" id="13-gotchas-feedback-bugs">13) Gotchas, feedback, bugs</h2>
+
+<p>If you need to fix up checksums or do other cleanups on mutated test cases, see<br>
+<code>afl_custom_post_process</code> in custom_mutators/examples/example.c for a viable<br>
+solution.</p>
+<p>Do not mix QEMU mode with ASAN, MSAN, or the likes; QEMU doesn&apos;t appreciate the<br>
+&quot;shadow VM&quot; trick employed by the sanitizers and will probably just run out of<br>
+memory.</p>
+<p>Compared to fully-fledged virtualization, the user emulation mode is <em>NOT</em> a<br>
+security boundary. The binaries can freely interact with the host OS. If you<br>
+somehow need to fuzz an untrusted binary, put everything in a sandbox first.</p>
+<p>QEMU does not necessarily support all CPU or hardware features that your target<br>
+program may be utilizing. In particular, it does not appear to have full support<br>
+for AVX2/FMA3. Using binaries for older CPUs or recompiling them with<br>
+<code>-march=core2</code>, can help.</p>
+<h2 class="mume-header" id="14-alternatives-static-rewriting">14) Alternatives: static rewriting</h2>
+
+<p>Statically rewriting binaries just once, instead of attempting to translate them<br>
+at run time, can be a faster alternative. That said, static rewriting is fraught<br>
+with peril, because it depends on being able to properly and fully model program<br>
+control flow without actually executing each and every code path.</p>
+<p>For more information and hints, check out<br>
+<a href="../docs/fuzzing_binary-only_targets.md">docs/fuzzing_binary-only_targets.md</a>.</p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    </body></html>
