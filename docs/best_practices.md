@@ -4,11 +4,19 @@
 
 ### Targets
 
-* [Fuzzing a target with source code available](#fuzzing-a-target-with-source-code-available)
-* [Fuzzing a target with dlopen() instrumented libraries](#fuzzing-a-target-with-dlopen-instrumented-libraries)
-* [Fuzzing a binary-only target](#fuzzing-a-binary-only-target)
-* [Fuzzing a GUI program](#fuzzing-a-gui-program)
-* [Fuzzing a network service](#fuzzing-a-network-service)
+- [Best practices](#best-practices)
+  - [Contents](#contents)
+    - [Targets](#targets)
+    - [Improvements](#improvements)
+  - [Targets](#targets-1)
+    - [Fuzzing a target with source code available](#fuzzing-a-target-with-source-code-available)
+    - [Fuzzing a target with dlopen instrumented libraries](#fuzzing-a-target-with-dlopen-instrumented-libraries)
+    - [Fuzzing a binary-only target](#fuzzing-a-binary-only-target)
+    - [Fuzzing a GUI program](#fuzzing-a-gui-program)
+    - [Fuzzing a network service](#fuzzing-a-network-service)
+  - [Improvements](#improvements-1)
+    - [Improving speed](#improving-speed)
+    - [Improving stability](#improving-stability)
 
 ### Improvements
 
@@ -24,24 +32,29 @@ To learn how to fuzz a target if source code is available, see
 要了解如何在源代码可用的情况下对目标进行模糊测试，请参阅[fuzzing_in_depth.md](fuzzing_in_depth.md).
 
 ### Fuzzing a target with dlopen instrumented libraries
+对一个使用dlopen加载插桩动态库的被测对象进行模糊测试
 
 If a source code based fuzzing target loads instrumented libraries with
 dlopen() after the forkserver has been activated and non-colliding coverage
 instrumentation is used (PCGUARD (which is the default), or LTO), then this
 an issue, because this would enlarge the coverage map, but afl-fuzz doesn't
 know about it.
+如果一个基于源代码的模糊测试目标在forkserver启动后，使用dlopen()加载插桩库，并使用非冲突覆盖插桩（PCGUARD（这是默认的）或LTO），那么这就是一个问题，因为这会扩大coverage map，但afl-fuzz并不知道这一点。
 
 The solution is to use `AFL_PRELOAD` for all dlopen()'ed libraries to
 ensure that all coverage targets are present on startup in the target,
 even if accessed only later with dlopen().
+解决方案是对所有dlopen()的库使用`AFL_PRELOAD`，以确保所有的覆盖目标在目标启动时就存在，即使只在稍后通过dlopen()访问。
 
 For PCGUARD instrumentation `abort()` is called if this is detected, for LTO
 there will either be no coverage for the instrumented dlopen()'ed libraries or
 you will see lots of crashes in the UI.
+对于PCGUARD插桩，如果检测到这个问题，将调用`abort()`。对于LTO，要么插桩的dlopen()的库没有覆盖，要么你会在UI中看到很多崩溃。
 
 Note that this is not an issue if you use the inferiour `afl-gcc-fast`,
 `afl-gcc` or`AFL_LLVM_INSTRUMENT=CLASSIC/NGRAM/CTX afl-clang-fast`
 instrumentation.
+请注意，如果你使用较差的`afl-gcc-fast`，`afl-gcc`或`AFL_LLVM_INSTRUMENT=CLASSIC/NGRAM/CTX afl-clang-fast`插桩，这不是一个问题。
 
 ### Fuzzing a binary-only target
 对二进制进行fuzz

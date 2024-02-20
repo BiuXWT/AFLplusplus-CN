@@ -89,7 +89,19 @@ L. Faster fuzzing and less kernel syscall overhead by in-memory fuzz testcase
 11. Coresight mode is only available on AARCH64 Linux with a CPU with Coresight
     extension
 12. Nyx mode is only supported on Linux and currently restricted to x86_x64
-
+----
+1. 对于LLVM >= 9.0，默认设置。对于旧版本，由于之前的llvm版本存在效率问题，需要设置环境变量。
+2. GCC创建的代码性能不佳，因此在gcc_plugin中被禁用。
+3. 使用`AFL_LLVM_THREADSAFE_INST`，禁用NeverZero。
+4. 对于LLVM 11及更高版本支持pcguard模式和LTO模式。
+5. 即将推出，正在分支中开发。
+6. 不兼容LTO插桩，并且至少需要LLVM v4.1。
+7. 在LLVM 11及更高版本的LTO模式中自动进行，在所有LLVM版本中进行额外的传递，将结果写入文件以供afl-fuzz的`-x`使用。
+8. 由于内核变化过快，当前快照LKM未维护 :-(
+9. FRIDA模式在Linux和MacOS上支持Intel和ARM。
+10. QEMU/Unicorn仅在Linux上支持。
+11. Coresight模式只在具有Coresight扩展的AARCH64 Linux上可用。
+12. Nyx模式只在Linux上支持，并且目前仅限于x86_x64。
 ## Integrated features and patches
 
 Among others, the following features and patches have been integrated:
