@@ -24,9 +24,8 @@ training, then we can highly recommend the following:
 
 * [https://github.com/antonio-morales/Fuzzing101](https://github.com/antonio-morales/Fuzzing101)
 
-Here is a good forkflow description (and tutorial) for qemu_mode:
+Here is a good workflow description (and tutorial) for qemu_mode:
 这是一个关于 qemu_mode 的工作流程描述（和教程）：
-
 
 * [https://airbus-seclab.github.io/AFLplusplus-blogpost/](https://airbus-seclab.github.io/AFLplusplus-blogpost/)
 

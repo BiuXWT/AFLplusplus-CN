@@ -139,7 +139,6 @@ allows you to define network state with different type of data packets.
    ([fuzzing_in_depth.md:3c) Using multiple cores](fuzzing_in_depth.md#c-using-multiple-cores))!
    使用多核心 ([fuzzing_in_depth.md:3c) Using multiple cores](fuzzing_in_depth.md#c-using-multiple-cores))!
 
-
 ### Improving stability
 提升稳定性
 

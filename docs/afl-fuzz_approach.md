@@ -76,6 +76,7 @@ that.
 
 If you are using inverse video, you may want to change your settings, say:
 如果你正在使用反向视频，你可能想要改变你的设置，比如说：
+
 - For GNOME Terminal, go to `Edit > Profile` preferences, select the "colors"
   tab, and from the list of built-in schemes, choose "white on black".
 - 对于 GNOME 终端，转到 `Edit > Profile` 首选项，选择 "colors" 标签页，在内置方案列表中选择 "white on black"。
@@ -144,6 +145,7 @@ red warning in this section, too :-)
 
 ### Overall results
 总体结果
+
 ```
   +-----------------------+
   |  cycles done : 0      |

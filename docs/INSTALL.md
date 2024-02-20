@@ -134,7 +134,6 @@ These build options exist:
 * LLVM_CONFIG - if your distro doesn't use the standard name for llvm-config (e.g., Debian)
 * LLVM_CONFIG - 如果你的发行版没有使用llvm-config的标准名称（例如，Debian）
 
-
 e.g.: `make LLVM_CONFIG=llvm-config-14`
 
 ## MacOS X on x86 and arm64 (M1)
@@ -155,10 +154,10 @@ freshly installed clang, clang++, llvm-config, gmake and coreutils, e.g.:
 # Depending on your MacOS system + brew version it is either
 export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 # or
-export PATH="/usr/local/opt/llvm/bin:$PATH"
+export PATH="/usr/local/opt/llvm/bin:/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 # you can check with "brew info llvm"
 
-export PATH="/usr/local/opt/coreutils/libexec/gnubin:/usr/local/bin:$PATH"
+export PATH="/usr/local/bin:$PATH"
 export CC=clang
 export CXX=clang++
 gmake

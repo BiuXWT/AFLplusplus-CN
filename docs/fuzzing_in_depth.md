@@ -60,13 +60,16 @@ tasks, fuzzing may put a strain on your hardware and on the OS. In particular:
   heavy writing done in RAM to prevent the aforementioned wear and tear. For
   example, the following line will run a Docker container with all this preset:
   使用`AFL_TMPDIR`环境变量和 RAM-disk，您可以在 RAM 中完成繁重的写入，以防止上述硬件消耗。例如，以下命令将运行具有所有这些预设的 Docker 容器：
+
   ```shell
   # docker run -ti --mount type=tmpfs,destination=/ramdisk -e AFL_TMPDIR=/ramdisk aflplusplus/aflplusplus
   ```
 
-## 1. Instrumenting the target 对目标插桩
+## 1. Instrumenting the target
+ 对目标插桩
 
-### a) Selecting the best AFL++ compiler for instrumenting the target 选择合适的编译器给目标插桩
+### a) Selecting the best AFL++ compiler for instrumenting the target
+ 选择合适的编译器给目标插桩
 
 AFL++ comes with a central compiler `afl-cc` that incorporates various different
 kinds of compiler targets and instrumentation options. The following
@@ -77,29 +80,31 @@ It is highly recommended to have the newest llvm version possible installed,
 anything below 9 is not recommended.
 强烈建议安装最新的llvm版本，不建议安装低于9的版本。
 
-> +--------------------------------+
-> | clang/clang++ 11+ is available | --> use LTO mode (afl-clang-lto/afl-clang-lto++)
-> +--------------------------------+     see [instrumentation/README.lto.md](instrumentation/README.lto.md)
->     |
->     | if not, or if the target fails with LTO afl-clang-lto/++
->     |
->     v
-> +---------------------------------+
-> | clang/clang++ 3.8+ is available | --> use LLVM mode (afl-clang-fast/afl-clang-fast++)
-> +---------------------------------+     see [instrumentation/README.llvm.md](instrumentation/README.llvm.md)
->     |
->     | if not, or if the target fails with LLVM afl-clang-fast/++
->     |
->     v
->  +--------------------------------+
->  | gcc 5+ is available            | -> use GCC_PLUGIN mode (afl-gcc-fast/afl-g++-fast)
->  +--------------------------------+    see [instrumentation/README.gcc_plugin.md](instrumentation/README.> gcc_plugin.md) and
->                                        [instrumentation/README.instrument_list.md](instrumentation/README.> instrument_list.md)
->     |
->     | if not, or if you do not have a gcc with plugin support
->     |
->     v
->    use GCC mode (afl-gcc/afl-g++) (or afl-clang/afl-clang++ for clang)
+```
++--------------------------------+
+| clang/clang++ 11+ is available | --> use LTO mode (afl-clang-lto/afl-clang-lto++)
++--------------------------------+     see [instrumentation/README.lto.md](instrumentation/README.lto.md)
+    |
+    | if not, or if the target fails with LTO afl-clang-lto/++
+    |
+    v
++---------------------------------+
+| clang/clang++ 3.8+ is available | --> use LLVM mode (afl-clang-fast/afl-clang-fast++)
++---------------------------------+     see [instrumentation/README.llvm.md](instrumentation/README.llvm.md)
+    |
+    | if not, or if the target fails with LLVM afl-clang-fast/++
+    |
+    v
+ +--------------------------------+
+ | gcc 5+ is available            | -> use GCC_PLUGIN mode (afl-gcc-fast/afl-g++-fast)
+ +--------------------------------+    see [instrumentation/README.gcc_plugin.md](instrumentation/README.gcc_plugin.md) and
+                                       [instrumentation/README.instrument_list.md](instrumentation/README.instrument_list.md)
+    |
+    | if not, or if you do not have a gcc with plugin support
+    |
+    v
+   use GCC mode (afl-gcc/afl-g++) (or afl-clang/afl-clang++ for clang)
+```
 
 Clickable README links for the chosen compiler:
 点击选择的编译器的readme查看详情:
@@ -136,7 +141,8 @@ variables, which can be listed with `afl-cc -hh` or looked up in
 [env_variables.md](env_variables.md).
 由于不接受任何afl++特定的命令行选项(除了 `--afl-MODE` 命令)，编译时工具可以相当广泛地使用环境变量，可以使用`afl-cc -hh`列出环境变量，也可以在[env_variables.md](env_variables.md)中查找。
 
-### b) Selecting instrumentation options 选择插桩参数
+### b) Selecting instrumentation options
+ 选择插桩参数
 
 If you instrument with LTO mode (afl-clang-fast/afl-clang-lto), the following
 options are available:
@@ -182,6 +188,7 @@ by explicitly excluding parts from instrumentation.
   1. Just put one filename or function (prefixing with `fun: `) per line (no
      directory information necessary for filenames) in the file `allowlist.txt`.
      只需在`allowlist.txt`文件中每行放置一个文件名或函数(前缀为`fun:`)(文件名不需要目录信息)。
+
      Example:
      例如:
 
@@ -223,7 +230,8 @@ here:
 AFL++在其位图中执行“永不为零”计数。你可以在这里了解更多:
 * [instrumentation/README.llvm.md#8-neverzero-counters](../instrumentation/README.llvm.md#8-neverzero-counters)
 
-### c) Selecting sanitizers 选择合适的消毒器
+### c) Selecting sanitizers
+ 选择合适的消毒器
 
 It is possible to use sanitizers when instrumenting targets for fuzzing, which
 allows you to find bugs that would not necessarily result in a crash.
@@ -285,13 +293,16 @@ CFISAN. You might need to experiment which sanitizers you can combine in a
 target (which means more instances can be run without a sanitized target, which
 is more effective).
 请注意，有些消毒器不能一起使用，例如ASAN和MSAN，而其他消毒器通常由于目标的奇特性而无法一起工作，例如ASAN和CFISAN。您可能需要尝试在目标中可以组合使用哪些消毒器（这意味着可以在没有经过消毒的目标的情况下运行更多的实例）。
-### d) Modifying the target 修改目标
+
+### d) Modifying the target
+ 修改目标
 
 If the target has features that make fuzzing more difficult, e.g., checksums,
 HMAC, etc., then modify the source code so that checks for these values are
 removed. This can even be done safely for source code used in operational
 products by eliminating these checks within these AFL++ specific blocks:
 如果目标具有使模糊测试更困难的特性，例如校验和、HMAC等，那么可以修改源代码以移除这些值的检查。这甚至可以通过在这些AFL++特定的块中消除这些检查，安全地对用于操作产品的源代码进行修改：
+
 ```
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
   // say that the checksum or HMAC was fine - or whatever is required
@@ -303,7 +314,8 @@ products by eliminating these checks within these AFL++ specific blocks:
 All AFL++ compilers will set this preprocessor definition automatically.
 所有的 AFL++ 编译器都会自动设置这个预处理器定义。
 
-### e) Instrumenting the target 对目标插桩
+### e) Instrumenting the target
+对目标插桩
 
 In this step, the target source code is compiled so that it can be fuzzed.
 在这个步骤中，目标源代码被编译，以便可以进行模糊测试。
@@ -313,12 +325,14 @@ compiler is used. Also - if possible - you should always configure the build
 system in such way that the target is compiled statically and not dynamically.
 How to do this is described below.
 基本上，你必须告诉目标构建系统使用选定的AFL++编译器。此外，如果可能的话，你应该始终配置构建系统，使目标静态编译，而不是动态编译。如何做到这一点将在下面描述。
+
 The #1 rule when instrumenting a target is: avoid instrumenting shared libraries
 at all cost. You would need to set `LD_LIBRARY_PATH` to point to these, you
 could accidentally type "make install" and install them system wide - so don't.
 Really don't. **Always compile libraries you want to have instrumented as static
 and link these to the target program!**
 在对目标进行插桩时的第一规则是：尽可能避免对共享库进行插桩。你需要设置`LD_LIBRARY_PATH`来指向这些库，你可能会意外地键入"make install"并将它们安装到系统范围内，所以不要这样做。真的不要。**始终将你想要插桩的库编译为静态库，并将这些库链接到目标程序！**
+
 Then build the target. (Usually with `make`.)
 然后构建目标。（通常使用`make`。）
 
@@ -340,7 +354,7 @@ Then build the target. (Usually with `make`.)
    afterwards this option has to be unset again!
    如果configure/build系统对AFL++的编译器有所抱怨并中止，则设置`export AFL_NOOPT=1`，这将只会像真正的编译器一样运行，并单独运行配置步骤。在之后构建目标时，必须再次取消设置此选项！
 
-#### configure 
+#### configure
 
 For `configure` build systems, this is usually done by:
 
@@ -435,6 +449,7 @@ doing it for a hobby and not professionally :-).
 libfuzzer `LLVMFuzzerTestOneInput()` harnesses are the defacto standard for
 fuzzing, and they can be used with AFL++ (and honggfuzz) as well!
 LibFuzzer的LLVMFuzzerTestOneInput()测试工具是模糊测试的事实标准，它们也可以与AFL++（和honggfuzz）一起使用！
+
 Compiling them is as simple as:
 编译它们非常简单：
 
@@ -456,13 +471,15 @@ shared-memory test cases and hence gives you the fastest speed possible.
 For more information, see
 [utils/aflpp_driver/README.md](../utils/aflpp_driver/README.md).
 
-## 2. Preparing the fuzzing campaign 准备模糊测试活动
+## 2. Preparing the fuzzing campaign
+ 准备模糊测试活动
 
 As you fuzz the target with mutated input, having as diverse inputs for the
 target as possible improves the efficiency a lot.
 当你使用变异输入对目标进行模糊测试时，尽可能多样化的输入可以大大提高效率。
 
-### a) Collecting inputs 搜集输入
+### a) Collecting inputs
+ 搜集输入
 
 To operate correctly, the fuzzer requires one or more starting files that
 contain a good example of the input data normally expected by the targeted
@@ -483,7 +500,8 @@ You can find many good examples of starting files in the
 [testcases/](../testcases) subdirectory that comes with this tool.
 你可以在这个工具附带的 [testcases/](^../testcases^) 子目录中找到许多很好的起始文件示例。
 
-### b) Making the input corpus unique 使输入语料库唯一
+### b) Making the input corpus unique
+ 使输入语料库唯一
 
 Use the AFL++ tool `afl-cmin` to remove inputs from the corpus that do not
 produce a new path/coverage in the target:
@@ -516,7 +534,8 @@ This step is highly recommended, because afterwards the testcase corpus is not
 bloated with duplicates anymore, which would slow down the fuzzing progress!
 非常推荐这个步骤,在这之后语料不会因为重复而臃肿,重复的语料会拖慢测试进度
 
-### c) Minimizing all corpus files 最小化所有语料库文件
+### c) Minimizing all corpus files
+ 最小化所有语料库文件
 
 The shorter the input files that still traverse the same path within the target,
 the better the fuzzing will be. This minimization is done with `afl-tmin`,
@@ -535,7 +554,8 @@ This step can also be parallelized, e.g., with `parallel`.
 
 Note that this step is rather optional though.
 
-### Done! 完成
+### Done!
+ 完成
 
 The INPUTS_UNIQUE/ directory from [step b](#b-making-the-input-corpus-unique) -
 or even better the directory input/ if you minimized the corpus in
@@ -543,7 +563,8 @@ or even better the directory input/ if you minimized the corpus in
 directory to be used in fuzzing! :-)
 步骤b的`INPUTS_UNIQUE/`文件夹,或者最好是步骤c的`input/`文件夹,将是你最终用于模糊测试的输入语料库目录
 
-## 3. Fuzzing the target 测试目标
+## 3. Fuzzing the target
+ 测试目标
 
 In this final step, fuzz the target. There are not that many important options
 to run the target - unless you want to use many CPU cores/threads for the
@@ -595,7 +616,7 @@ exist.
 It can be valuable to run afl-fuzz in a `screen` or `tmux` shell so you can log
 off, or afl-fuzz is not aborted if you are running it in a remote ssh session
 where the connection fails in between. Only do that though once you have
-verified that your fuzzing setup works! Run it like `screen -dmS afl-main -- 
+verified that your fuzzing setup works! Run it like `screen -dmS afl-main --
 afl-fuzz -M main-$HOSTNAME -i ...` and it will start away in a screen session.
 To enter this session, type `screen -r afl-main`. You see - it makes sense to
 name the screen session same as the afl-fuzz `-M`/`-S` naming :-) For more
@@ -665,7 +686,8 @@ All labels are explained in
 [afl-fuzz_approach.md#understanding-the-status-screen](afl-fuzz_approach.md#understanding-the-status-screen).
 所有的标签都在 [afl-fuzz_approach.md#understanding-the-status-screen](afl-fuzz_approach.md#understanding-the-status-screen) 中有解释。
 
-### b) Keeping memory use and timeouts in check 检查内存使用和超时
+### b) Keeping memory use and timeouts in check
+ 检查内存使用和超时
 
 Memory limits are not enforced by afl-fuzz by default and the system may run out
 of memory. You can decrease the memory with the `-m` option, the value is in MB.
@@ -688,7 +710,8 @@ presented with pathological inputs. Low `-m` values can make them give up sooner
 and not waste CPU time.
 `-m` 参数也值得一看。当面对病态输入时，有些程序可能会花费大量时间分配和初始化内存。较低的 `-m` 值可以使它们更早放弃并不浪费 CPU 时间。
 
-### c) Using multiple cores 使用多核cpu
+### c) Using multiple cores
+ 使用多核cpu
 
 If you want to seriously fuzz, then use as many cores/threads as possible to
 fuzz your target.
@@ -789,7 +812,8 @@ honggfuzz (with `-n 1` or `-n 2`) and libfuzzer in parallel is highly
 recommended!
 然而，您也可以使用 honggfuzz、libfuzzer（带 `-entropic=1` 等）与 AFL++ 同步。只需通过 `-F` 选项向主模糊器（`-M`）显示不同模糊器的队列/工作目录在哪里，例如，`-F /src/target/honggfuzz`。强烈推荐并行使用 honggfuzz（带 `-n 1` 或 `-n 2`）和 libfuzzer！
 
-### d) Using multiple machines for fuzzing 使用多台机器进行模糊测试
+### d) Using multiple machines for fuzzing
+ 使用多台机器进行模糊测试
 
 Maybe you have more than one machine you want to fuzz the same target on. Start
 the `afl-fuzz` (and perhaps libfuzzer, honggfuzz, ...) orchestra as you like,
@@ -817,7 +841,6 @@ syncs to all `-S` secondaries as well as to other fuzzers, you have to copy only
 this directory to the other machines.
 同步过程本身非常简单。由于 `-M main-$HOSTNAME` 实例会同步到所有 `-S` 次要实例以及其他模糊器，所以您只需要将此目录复制到其他机器上。
 
-
 Let's say all servers have the `-o out` directory in /target/foo/out, and you
 created a file `servers.txt` which contains the hostnames of all participating
 servers, plus you have an ssh key deployed to all of them, then run:
@@ -836,7 +859,8 @@ complex and configurable script in
 [utils/distributed_fuzzing](../utils/distributed_fuzzing).
 您可以手动运行这个，也可以通过 cron 任务运行 - 根据您的需要。在 [utils/distributed_fuzzing](../utils/distributed_fuzzing) 中有一个更复杂和可配置的脚本。
 
-### e) The status of the fuzz campaign 模糊测试活动的状态
+### e) The status of the fuzz campaign
+ 模糊测试活动的状态
 
 AFL++ comes with the `afl-whatsup` script to show the status of the fuzzing
 campaign.
@@ -859,7 +883,8 @@ fuzzing instance is performing. The syntax is `afl-plot instance_dir web_dir`,
 e.g., `afl-plot out/default /srv/www/htdocs/plot`.
 另一个检查特定实例的当前状态和历史的工具是 afl-plot，它生成一个 index.html 文件和图表，显示模糊测试实例的性能。语法是 `afl-plot instance_dir web_dir`，例如，`afl-plot out/default /srv/www/htdocs/plot`。
 
-### f) Stopping fuzzing, restarting fuzzing, adding new seeds 停止模糊测试，重新开始模糊测试，添加新种子
+### f) Stopping fuzzing, restarting fuzzing, adding new seeds
+ 停止模糊测试，重新开始模糊测试，添加新种子
 
 To stop an afl-fuzz run, press Control-C.
 要停止 afl-fuzz 运行，按 Control-C。
@@ -877,7 +902,8 @@ seeds are in `newseeds/` directory:
 AFL_BENCH_JUST_ONE=1 AFL_FAST_CAL=1 afl-fuzz -i newseeds -o out -S newseeds -- ./target
 ```
 
-### g) Checking the coverage of the fuzzing 检查模糊测试的覆盖率
+### g) Checking the coverage of the fuzzing
+ 检查模糊测试的覆盖率
 
 The `corpus count` value is a bad indicator for checking how good the coverage
 is.
@@ -933,7 +959,8 @@ fuzz a library to convert image formats and your target is the png to tiff API,
 then you will not touch any of the other library APIs and features.
 请注意，在几乎所有情况下，您都无法达到完全覆盖。通常，大量的功能依赖于互斥的选项，每个选项都需要进行单独的模糊测试活动。例如，如果您模糊一个用于转换图像格式的库，并且您的目标是 png 到 tiff API，那么您将不会触及库的任何其他 API 和功能。
 
-### h) How long to fuzz a target? 需要对一个目标进行模糊测试多久？
+### h) How long to fuzz a target?
+ 需要对一个目标进行模糊测试多久？
 
 This is a difficult question. Basically, if no new path is found for a long time
 (e.g., for a day or a week), then you can expect that your fuzzing won't be
@@ -947,7 +974,8 @@ and use them to seed other good fuzzers like libfuzzer with the -entropic switch
 or honggfuzz.
 保留 queue/ 目录（用于对相同或类似目标的未来模糊测试），并将它们用于种子其他好的模糊器，如带有 -entropic 开关的 libfuzzer 或 honggfuzz。
 
-### i) Improve the speed!提高速度！
+### i) Improve the speed!
+提高速度！
 
 * Use [persistent mode](../instrumentation/README.persistent_mode.md) (x2-x20
   speed increase).
@@ -972,7 +1000,8 @@ or honggfuzz.
   a reboot.
   在重新启动后的第一个 afl-fuzz 实例启动之前，运行 sudo afl-system-config。
 
-### j) Going beyond crashes 超越崩溃
+### j) Going beyond crashes
+ 超越崩溃
 
 Fuzzing is a wonderful and underutilized technique for discovering non-crashing
 design and implementation errors, too. Quite a few interesting bugs have been
@@ -1002,7 +1031,8 @@ shared with libfuzzer and honggfuzz) or `#ifdef __AFL_COMPILER` (this one is
 just for AFL++).
 实现这些或类似的完整性检查通常需要很少的时间；如果你是特定包的维护者，你可以使用`#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION`（一个也与libfuzzer和honggfuzz共享的标志）或`#ifdef __AFL_COMPILER`（这个只是为AFL++准备的）来使这段代码有条件地执行。
 
-### k) Known limitations & areas for improvement 已知的限制 & 待改进部分
+### k) Known limitations & areas for improvement
+ 已知的限制 & 待改进部分
 
 Here are some of the most important caveats for AFL++:
 以下是AFL++的一些最重要的注意事项：
@@ -1050,7 +1080,8 @@ Here are some of the most important caveats for AFL++:
 Beyond this, see [INSTALL.md](INSTALL.md) for platform-specific tips.
 除此之外，有关平台特定提示，请参阅[INSTALL.md](INSTALL.md)。
 
-## 4. Triaging crashes 故障分类
+## 4. Triaging crashes
+ 故障分类
 
 The coverage-based grouping of crashes usually produces a small data set that
 can be quickly triaged manually or with a very simple GDB or Valgrind script.
@@ -1112,7 +1143,8 @@ contain severity and other information.
 casr-afl -i /path/to/afl/out/dir -o /path/to/casr/out/dir
 ```
 
-## 5. CI fuzzing CI模糊测试
+## 5. CI fuzzing
+ CI模糊测试
 
 Some notes on continuous integration (CI) fuzzing - this fuzzing is different to
 normal fuzzing campaigns as these are much shorter runnings.
@@ -1124,7 +1156,8 @@ phase and start fuzzing at once. But only do that if the calibration time is
 too long for your overall available fuzz run time.
 如果CI中的队列巨大和/或执行时间慢，那么你也可以添加`AFL_NO_STARTUP_CALIBRATION=1`来跳过初始队列校准阶段并立即开始模糊测试。但只有当校准时间对于你的总体可用模糊运行时间来说太长时，才这样做。
 
-1. Always: 总是：
+1. Always:
+ 总是：
     * LTO has a much longer compile time which is diametrical to short fuzzing -
       hence use afl-clang-fast instead.
     * LTO的编译时间要长得多，这与短时间的模糊测试是相反的 - 因此使用afl-clang-fast代替。
@@ -1176,7 +1209,8 @@ and
 [clusterfuzz](https://github.com/google/clusterfuzz/blob/master/src/clusterfuzz/_internal/bot/fuzzers/afl/launcher.py).
 这个可以看起来像什么，例如，可以在Google的[oss-fuzz](https://github.com/google/oss-fuzz/blob/master/infra/base-images/base-builder/compile_afl)和[clusterfuzz](https://github.com/google/clusterfuzz/blob/master/src/clusterfuzz/_internal/bot/fuzzers/afl/launcher.py)中看到AFL++的设置。
 
-## The End 结束
+## The End
+ 结束
 
 Check out the [FAQ](FAQ.md). Maybe it answers your question (that you might not
 even have known you had ;-) ).
