@@ -62,6 +62,7 @@ If you find an interesting or important question missing, submit it via
   code instructions** that has **exactly one entry point** (which can be be entered by
   multiple other basic blocks) and runs linearly **without branching or jumping to
   other addresses** (except at the end).
+  一个程序包含了`函数`，`函数`中包含了编译后的机器代码。函数中的编译后的机器代码可以在一个或多个`基本块`中。`基本块`是**连续的机器代码指令的最大可能数量**，它有**一个明确的入口点**（可以由多个其他基本块进入）并且线性运行，**不会分支或跳转到其他地址**（除非在结束时）。
 
   ```
   function() {
@@ -82,9 +83,11 @@ If you find an interesting or important question missing, submit it via
   ```
 
   Every code block between two jump locations is a `basic block`.
+  在两个跳转位置之间的每一个代码块都是一个`基本块`。
 
   An `edge` is then the unique relationship between two directly connected
   `basic blocks` (from the code example above):
+  然后，`边`就是两个直接连接的`基本块`之间的唯一关系（如上面的代码示例）：
 
   ```
                 Block A
@@ -101,12 +104,15 @@ If you find an interesting or important question missing, submit it via
 
   Every line between two blocks is an `edge`. Note that a few basic block loop
   to itself, this too would be an edge.
+  在两个块之间的每一行都是一个`边`。请注意，有些基本块会循环到自身，这也会是一个边。
+  
 </p></details>
 
 <details>
   <summary id="should-you-ever-stop-afl-fuzz-minimize-the-corpus-and-restart">Should you ever stop afl-fuzz, minimize the corpus and restart?</summary><p>
 
   To stop afl-fuzz, minimize it's corpus and restart you would usually do:
+  要停止afl-fuzz，最小化它的语料库并重新启动，你通常会这样做：
 
   ```
   Control-C  # to terminate afl-fuzz
@@ -116,26 +122,35 @@ If you find an interesting or important question missing, submit it via
 
   If this improves fuzzing or not is debated and no consensus has been reached
   or in-depth analysis been performed.
+  这样做是否可以提高模糊测试的效果尚有争议，尚未达成共识或进行深入分析。
 
   On the pro side:
     * The queue/corpus is reduced (up to 20%) by removing intermediate paths
       that are maybe not needed anymore.
+  正面的观点：
+    * 通过移除可能不再需要的中间路径，队列/语料库被减少（最多20%）。
 
   On the con side:
     * Fuzzing time is lost for the time the fuzzing is stopped, minimized and
       restarted.
+  反面的观点：
+    * 在模糊测试停止、最小化和重新启动的时间里，模糊测试的时间被浪费了。
 
   The the big question:
     * Does a minimized queue/corpus improve finding new coverage or does it
       hinder it?
+  一个大问题：
+    * 最小化的队列/语料库是否有助于找到新的覆盖率，还是阻碍了它？
 
   The AFL++ team's own limited analysis seem to to show that keeping
   intermediate paths help to find more coverage, at least for afl-fuzz.
+  AFL++团队自己的有限分析似乎表明，保留中间路径有助于找到更多的覆盖率，至少对于afl-fuzz是这样。
 
   For honggfuzz in comparison it is a good idea to restart it from time to
   time if you have other fuzzers (e.g: AFL++) running in parallel to sync
   the finds of other fuzzers to honggfuzz as it has no syncing feature like
   AFL++ or libfuzzer.
+  对于honggfuzz来说，如果你有其他的模糊测试器（例如：AFL++）并行运行，那么不时地重新启动它是个好主意，以便将其他模糊测试器的发现同步到honggfuzz，因为它没有像AFL++或libfuzzer那样的同步功能。
 
 </p></details>
 
@@ -182,6 +197,7 @@ If you find an interesting or important question missing, submit it via
   be influenced by various factors, for example, speed (finding lots of paths
   quickly) or thoroughness (working with decreased speed, but finding better
   mutations).
+  良好的性能通常意味着"使模糊测试结果更好"。这可以受到各种因素的影响，例如，速度（快速找到大量的路径）或彻底性（以降低的速度工作，但找到更好的变异）。
 </p></details>
 
 <details>
@@ -198,14 +214,17 @@ If you find an interesting or important question missing, submit it via
   "stable". Sending the same input again and again should take the exact same
   path through the target every time. If that is the case, the stability is
   100%.
+  稳定性是通过目标中的边缘的百分比来衡量的，这些边缘是"稳定的"。反复发送相同的输入应该每次都通过目标的完全相同的路径。如果是这样，稳定性就是100%。
 
   If, however, randomness happens, e.g., a thread reading other external data,
   reaction to timing, etc., then in some of the re-executions with the same data
   the edge coverage result will be different across runs. Those edges that
   change are then flagged "unstable".
+  然而，如果发生随机性，例如，一个线程读取其他外部数据，对时间的反应等，那么在使用相同数据的一些重新执行中，边缘覆盖结果在运行之间会有所不同。那些改变的边缘然后被标记为"不稳定"。
 
   The more "unstable" edges there are, the harder it is for AFL++ to identify
   valid new paths.
+  "不稳定"的边缘越多，AFL++识别有效新路径就越困难。
 
   If you fuzz in persistent mode (`AFL_LOOP` or `LLVMFuzzerTestOneInput()`
   harnesses, a large number of unstable edges can mean that the target keeps
@@ -214,14 +233,17 @@ If you find an interesting or important question missing, submit it via
   from your harness or call `LLVMFuzzerTestOneInput()` harnesses with `@@`),
   or set a low  `AFL_LOOP` value, e.g. 100, and enable `AFL_PERSISTENT_RECORD`
   in `config.h` with the same value.
+  如果你在持久模式下进行模糊测试（`AFL_LOOP`或`LLVMFuzzerTestOneInput()`harness），大量的不稳定边缘可能意味着目标保持内部状态，因此可能无法重放崩溃。在这种情况下，要么**不**在持久模式下进行模糊测试（从你的马甲中移除`AFL_LOOP()`，或者用`@@`调用`LLVMFuzzerTestOneInput()`harness），要么设置一个低的`AFL_LOOP`值，例如100，并在`config.h`中启用`AFL_PERSISTENT_RECORD`，值也是相同的。
 
   A value above 90% is usually fine and a value above 80% is also still ok, and
   even a value above 20% can still result in successful finds of bugs. However,
   it is recommended that for values below 90% or 80% you should take
   countermeasures to improve stability.
+  通常来说，超过90%的值是可以接受的，超过80%的值也还可以，甚至超过20%的值仍然可以成功地找到错误。然而，建议对于低于90%或80%的值，你应该采取对策来提高稳定性。
 
   For more information on stability and how to improve the stability value, see
   [best_practices.md#improving-stability](best_practices.md#improving-stability).
+  关于稳定性以及如何提高稳定性值的更多信息，请参见[best_practices.md#improving-stability](best_practices.md#improving-stability)。
 </p></details>
 
 <details>
