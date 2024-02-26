@@ -12,7 +12,7 @@
   注意：afl++ 大多数工具会对任何未知的 AFL++ 环境变量发出警告；例如，由于拼写错误。如果你想禁用这个检查，那么设置 `AFL_IGNORE_UNKNOWN_ENVS` 环境变量。
 
 ## 1) Settings for all compilers
-
+为所有编译器进行设置
 
 Starting with AFL++ 3.0, there is only one compiler: afl-cc.
 
@@ -31,6 +31,19 @@ To select the different instrumentation modes, use one of the following options:
     - `GCC_PLUGIN` (afl-g*-fast)
     - `LLVM` (afl-clang-fast*)
     - `LTO` (afl-clang-lto*).
+
+从AFL++ 3.0开始，只有一个编译器：afl-cc。
+
+要选择不同的插桩模式，可以使用以下选项之一：
+
+  - 将--afl-MODE命令行选项传递给编译器。只有这个选项接受更多的AFL特定命令行选项。
+  - 使用到afl-cc的符号链接：afl-clang，afl-clang++，afl-clang-fast，afl-clang-fast++，afl-clang-lto，afl-clang-lto++，afl-g++，afl-g++-fast，afl-gcc，afl-gcc-fast。此选项不接受AFL特定的命令行选项。相反，使用环境变量。
+  - 使用`AFL_CC_COMPILER`环境变量与`MODE`。要选择`MODE`，使用以下值之一：
+
+    - `GCC` (afl-gcc/afl-g++)
+    - `GCC_PLUGIN` (afl-g*-fast)
+    - `LLVM` (afl-clang-fast*)
+    - `LTO` (afl-clang-lto*)。
 
 The compile-time tools do not accept AFL-specific command-line options. The
 --afl-MODE command line option is the only exception. The other options make
@@ -118,6 +131,53 @@ fairly broad use of environment variables instead:
   - `TMPDIR` is used by afl-as for temporary files; if this variable is not set,
     the tool defaults to /tmp.
 
+编译时工具不接受AFL特定的命令行选项。--afl-MODE命令行选项是唯一的例外。其他选项则广泛地使用环境变量：
+
+  - 一些构建/配置脚本在AFL++编译器中会出错。为了能够通过它们，可以这样做：
+
+    ```c
+          export CC=afl-cc
+          export CXX=afl-c++
+          export AFL_NOOPT=1
+          ./configure --disable-shared --disabler-werror
+          unset AFL_NOOPT
+          make
+    ```
+
+  - 设置`AFL_AS`，`AFL_CC`和`AFL_CXX`可以让你使用替代的下游编译工具，而不是你的`$PATH`中的默认'as'，'clang'或'gcc'二进制文件。
+
+  - 如果你是一个想要编译和插桩asm文本文件的奇怪的人，那么使用`AFL_AS_FORCE_INSTRUMENT`变量：
+    `AFL_AS_FORCE_INSTRUMENT=1 afl-gcc foo.s -o foo`
+
+  - 如果stdout/stderr被重定向，大多数AFL工具不会打印任何输出。如果你想将输出获取到一个文件中，那么设置`AFL_DEBUG`环境变量。遗憾的是，这对于各种可能失败的构建过程是必要的。
+
+  - 默认情况下，包装器会添加`-O3`来优化构建。非常少见的情况下，这会在使用-Werror构建的程序中引起问题，因为`-O3`启用了更彻底的代码分析，并可能产生额外的警告。要禁用优化，设置`AFL_DONT_OPTIMIZE`。然而，如果设置了`-O...`和/或`-fno-unroll-loops`，这些将不会被覆盖。
+
+  - 设置`AFL_HARDEN`会在调用下游编译器时自动添加代码硬化选项。这目前包括`-D_FORTIFY_SOURCE=2`和`-fstack-protector-all`。这个设置对于捕获非崩溃的内存错误很有用，但代价是非常轻微的（低于5%）性能损失。
+
+  - 将`AFL_INST_RATIO`设置为0到100之间的百分比，可以控制插桩每个分支的概率。这在处理异常复杂的程序时（很少见）有用，这些程序会饱和输出位图。例如包括ffmpeg，perl和v8。
+
+    （如果这种情况发生，afl-fuzz会提前警告你，通过以火红色显示"位图密度"字段。）
+
+    将`AFL_INST_RATIO`设置为0是一个有效的选择。这将只插桩函数入口点之间的转换，而不插桩单个分支。
+
+    注意，这是一个过时的变量。一些实例（例如，afl-gcc）仍然支持这些，但最先进的（例如，LLVM LTO和LLVM PCGUARD）不需要这个。
+
+  - `AFL_NO_BUILTIN`会导致编译器生成适合与libtokencap.so一起使用的代码（但可能比没有该标志运行得稍慢）。
+
+  - `AFL_PATH`可以用来将afl-gcc指向afl-as的另一个位置。这的一个可能的用途是utils/clang_asm_normalize/，它让你在编译clang代码时插桩手写的汇编，通过将一个规范器插入到链中。（GCC没有等效的特性。）
+
+  - 设置`AFL_QUIET`将防止在编译过程中显示afl-as和afl-cc的横幅，以防你觉得它们分散注意力。
+
+  - 设置`AFL_USE_...`会自动启用支持的清理器 - 前提是你的编译器支持它。可用的有：
+      - `AFL_USE_ASAN=1` - 激活地址清理器（内存破坏检测）
+      - `AFL_USE_CFISAN=1` - 激活控制流完整性清理器（例如类型混淆漏洞）
+      - `AFL_USE_LSAN` - 激活泄漏清理器。要在你的程序的某个点（例如在`__AFL_LOOP()`的结束处）执行泄漏检查，你可以运行宏`__AFL_LEAK_CHECK();`，如果有任何内存泄漏，这将导致中止（你可以将这个与`__AFL_LSAN_OFF();`和`__AFL_LSAN_ON();`宏结合使用，以避免检查在这两次调用之间分配的内存的泄漏。
+      - `AFL_USE_MSAN=1` - 激活内存清理器（未初始化的内存）
+      - `AFL_USE_TSAN=1` - 激活线程清理器以查找线程竞态条件
+      - `AFL_USE_UBSAN=1` - 激活未定义行为清理器
+
+  - `TMPDIR`被afl-as用于临时文件；如果这个变量没有设置，工具默认为/tmp。
 ## 2) Settings for LLVM and LTO: afl-clang-fast / afl-clang-fast++ / afl-clang-lto / afl-clang-lto++
 
 The native instrumentation helpers (instrumentation and gcc_plugin) accept a
@@ -331,6 +391,26 @@ mode.
     the target performs only a few loops, then this will give a small
     performance boost.
 
+## 3) GCC / GCC_PLUGIN模式的设置
+
+只有在GCC和GCC_PLUGIN模式中才有一些特定的特性。
+
+  - 仅GCC模式：设置`AFL_KEEP_ASSEMBLY`可以防止afl-as删除插桩的汇编文件。这对于排查问题或理解工具的工作方式很有用。
+
+    要将它们放在一个可预测的位置，可以尝试这样做：
+
+    ```c
+    mkdir assembly_here
+    TMPDIR=$PWD/assembly_here AFL_KEEP_ASSEMBLY=1 make clean all
+    ```
+
+  - 仅GCC_PLUGIN模式：使用文件名设置`AFL_GCC_INSTRUMENT_FILE`或`AFL_GCC_ALLOWLIST`将只对那些与此文件中列出的名称匹配的文件进行插桩（每行一个文件名）。
+
+    使用文件名和/或函数设置`AFL_GCC_DENYLIST`或`AFL_GCC_BLOCKLIST`将只跳过那些与指定文件中列出的名称匹配的文件。有关更多信息，请参见[instrumentation/README.instrument_list.md](../instrumentation/README.instrument_list.md)。
+
+    设置`AFL_GCC_OUT_OF_LINE=1`将指示afl-gcc-fast用调用注入的子程序来插桩代码，而不是更高效的内联插桩。
+
+    设置`AFL_GCC_SKIP_NEVERZERO=1`将不实现跳过零测试。如果目标只执行少数几个循环，那么这将给出小的性能提升。
 ## 4) Settings for afl-fuzz
 
 The main fuzzer binary accepts several options that disable a couple of sanity
@@ -627,6 +707,128 @@ checks or alter some of the more exotic semantics of the tool:
     Note that will not be exact and with slow targets it can take seconds
     until there is a slice for the time test.
 
+`afl-fuzz`二进制文件接受几个选项，这些选项可以禁用一些完整性检查或改变工具的一些更奇特的语义：
+
+  - 设置`AFL_AUTORESUME`将恢复模糊运行（与提供`-i -`相同）对于现有的out文件夹，即使提供了不同的`-i`。没有这个设置，afl-fuzz将拒绝执行长时间模糊的out目录。
+
+  - 仅用于基准测试：`AFL_BENCH_JUST_ONE`会导致模糊器在处理完第一个队列条目后退出；`AFL_BENCH_UNTIL_CRASH`会导致它在找到第一个崩溃后很快退出。
+
+  - `AFL_CMPLOG_ONLY_NEW`只会对新发现的测试用例执行昂贵的cmplog特性，而不是对启动时加载的测试用例（`-i in`）。当恢复模糊会话时，设置这个特性很重要。
+
+  - `AFL_IGNORE_SEED_PROBLEMS`将跳过种子中的崩溃和超时，而不是退出。
+
+  - 设置`AFL_CRASH_EXITCODE`设置AFL++将作为崩溃处理的退出代码。例如，如果设置了`AFL_CRASH_EXITCODE='-1'`，每个输入导致`-1`返回代码（即调用了`exit(-1)`），都会被视为发生了崩溃。如果你在寻找更高级别的错误条件，其中你的目标仍然优雅地退出，这可能会有益。
+
+  - 将`AFL_CUSTOM_MUTATOR_LIBRARY`设置为带有afl_custom_fuzz()的共享库，将通过这个库创建额外的突变。如果afl-fuzz是用Python编译的（这在构建afl-fuzz时会自动检测），将`AFL_PYTHON_MODULE`设置为Python模块也可以提供额外的突变。如果也设置了`AFL_CUSTOM_MUTATOR_ONLY`，所有的突变将仅由自定义突变器执行。这个特性允许配置自定义突变器，这对于模糊测试XML或其他高度灵活的结构化输入非常有帮助。详情请参见[custom_mutators.md](custom_mutators.md)。
+
+  - 设置`AFL_CYCLE_SCHEDULES`将在每次完成一个周期时切换到不同的调度。
+
+  - 设置`AFL_DEBUG_CHILD`将不抑制子输出。这让你看到子的所有输出，使设置问题明显。例如，在unicornafl马甲中，你可能会看到python堆栈跟踪。你也可能会看到其他日志，表明为什么forkserver无法启动。虽然不好看，但对于调试目的很有用。注意`AFL_DEBUG_CHILD_OUTPUT`已经被弃用。
+
+  - 设置`AFL_DISABLE_TRIM`告诉afl-fuzz不要修剪测试用例。这通常是个坏主意！
+
+  - 设置`AFL_KEEP_TIMEOUTS`将保留运行时间较长的输入，如果它们达到新的覆盖范围
+
+  - 相反，如果你对任何超时都不感兴趣，你可以设置`AFL_IGNORE_TIMEOUTS`来获得一点速度。
+
+  - `AFL_EXIT_ON_SEED_ISSUES`将恢复原始的afl-fuzz行为，它不允许在初始-i语料库中有崩溃或超时种子。
+
+  - `AFL_CRASHING_SEEDS_AS_NEW_CRASH`将把崩溃的种子视为新的崩溃。这些崩溃将被写入崩溃文件夹，作为op:dry_run，和orig:<seed_file_name>。
+
+  - `AFL_EXIT_ON_TIME`导致afl-fuzz在指定的时间段内没有找到新的路径时终止。对于某些类型的自动化工作可能很方便。
+
+  - `AFL_EXIT_WHEN_DONE`导致afl-fuzz在所有现有路径都被模糊处理，并且一段时间内没有新的发现时终止。这通常会通过UI中的周期计数器变为绿色来指示。对于某些类型的自动化工作可能很方便。
+
+  - 设置`AFL_EXPAND_HAVOC_NOW`将开始扩展的havoc模式，包括昂贵的突变。否则，afl-fuzz会在认为有用时自动启用这个模式。
+
+  - `AFL_FAST_CAL`保持校准阶段大约快2.5倍（尽管不太精确），这可以帮助在针对慢目标开始会话时。`AFL_CAL_FAST`也可以。
+  - 设置`AFL_FORCE_UI`将强制在屏幕上绘制UI，即使没有检测到有效的终端（对于虚拟控制台）。
+
+  - 设置`AFL_FORKSRV_INIT_TMOUT`允许你指定等待forkserver启动的不同超时时间。指定的值是新的超时时间，以毫秒为单位。默认值是`-t`值乘以`config.h`中的`FORK_WAIT_MULT`（通常为10），所以对于`-t 100`，默认会等待`1000`毫秒。`AFL_FORKSRV_INIT_TMOUT`值不会被乘以。它覆盖了afl-fuzz等待目标启动的初始超时时间。在这里设置不同的时间是有用的，如果目标启动时间非常慢，例如，当进行全系统模糊测试或模拟时，但你不希望实际运行等待超时太长。
+
+  - 设置`AFL_HANG_TMOUT`允许你指定决定特定测试用例是否为"挂起"的不同超时时间。默认值是1秒或`-t`参数的值，取较大者。如果你非常关心慢输入，或者如果你不希望AFL++花费太多时间对那些东西进行分类，并且只是快速地将所有超时放入那个箱子，那么降低值可能是有用的。
+
+  - 如果你是Jakub，你可能需要`AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES`。其他人不需要申请，除非他们也想禁用`/proc/sys/kernel/core_pattern`检查。
+
+  - 如果afl-fuzz在模糊测试会话期间（不是在启动时）遇到不正确的模糊测试设置，它将终止。如果你不希望这样，那么你可以设置`AFL_IGNORE_PROBLEMS`。如果你还想忽略来自后期加载库的覆盖率，你可以设置`AFL_IGNORE_PROBLEMS_COVERAGE`。
+
+  - 当使用多个afl-fuzz或使用`-F`运行时，设置`AFL_IMPORT_FIRST`会使模糊器在做任何其他事情之前从其他实例导入测试用例。这使得UI中的"own finds"计数器更准确。
+
+  - 当使用多个afl-fuzz或使用`-F`运行时，设置`AFL_FINAL_SYNC`将导致模糊器在终止时执行最后的测试用例导入。这对于`-M`主模糊器有益，以确保它具有所有唯一的测试用例，因此你只需要对这个单一的队列进行`afl-cmin`。
+
+  - 设置`AFL_INPUT_LEN_MIN`和`AFL_INPUT_LEN_MAX`是afl-fuzz -g/-G命令行选项的替代方法，用于控制生成的模糊输入的最小/最大值。
+
+  - `AFL_KILL_SIGNAL`：设置要在超时时发送给子进程的信号ID。除非你实现了自己的目标或插桩，否则你可能不需要设置它。默认情况下，超时和退出时，将向子进程发送`SIGKILL`（`AFL_KILL_SIGNAL=9`）。
+
+  - `AFL_FORK_SERVER_KILL_SIGNAL`：设置在AFL++终止时发送给fork server的信号ID。除非你实现了你自己的fork server，否则你可能不需要设置它。默认情况下，将向fork server发送`SIGTERM`（`AFL_FORK_SERVER_KILL_SIGNAL=15`）。如果只提供了`AFL_KILL_SIGNAL`，`AFL_FORK_SERVER_KILL_SIGNAL`将被设置为与`AFL_KILL_SIGNAL`相同的值，以提供向后兼容性。如果也设置了`AFL_FORK_SERVER_KILL_SIGNAL`，它将优先。
+
+  - 注意：无法捕获的信号，如`SIGKILL`，会导致fork server的子进程成为孤儿，并使它们处于僵尸状态。
+
+  - `AFL_MAP_SIZE`设置afl-analyze，afl-fuzz，afl-showmap和afl-tmin创建的共享映射的大小，以从目标收集插桩数据。这必须等于或大于目标编译的大小。
+
+  - 设置 `AFL_MAX_DET_EXTRAS` 将改变 `-x` 字典和 LTO autodict（结合使用）中元素数量的阈值，超过这个阈值，概率模式将启动。在概率模式下，不是所有的字典条目都会一直用于模糊突变，以避免减慢模糊测试的速度。默认的计数是 `200` 个元素。所以对于第 201 个元素，有 1/201 的机会，字典条目之一将不会被直接使用。
+
+  - 设置 `AFL_NO_AFFINITY` 将禁止尝试在 Linux 系统上绑定到特定的 CPU 核心。这会减慢速度，但是让你运行更多的 afl-fuzz 实例，比较谨慎（如果你真的想要的话）。
+
+  - `AFL_NO_ARITH` 会导致 AFL++ 跳过大部分的确定性算术。这可以用来加速文本文件格式的模糊测试。
+
+  - 设置 `AFL_NO_AUTODICT` 将不会加载编译到目标中的 LTO 生成的自动字典。
+
+  - 设置 `AFL_NO_COLOR` 或 `AFL_NO_COLOUR` 将在配置了 USE_COLOR 和非 ALWAYS_COLORED 时，省略用于着色控制台输出的控制序列。
+
+  - 显示在屏幕底部的 CPU 小部件相当简单，可能会过早地抱怨高负载，特别是在核心计数低的系统上。为了避免 CPU 使用率非常高时的惊人红色，你可以设置 `AFL_NO_CPU_RED`。
+
+  - 设置 `AFL_NO_FORKSRV` 禁用 forkserver 优化，回退到对每个测试输入进行 fork + execve() 调用。这主要在处理不规则的库时有用，这些库在初始化时（在插桩有机会运行之前）创建线程或做其他疯狂的事情。
+
+    注意，这个设置抑制了启动 forkserver 时通常进行的一些用户友好的诊断，并导致了相当大的性能下降。
+
+  - `AFL_NO_SNAPSHOT` 将建议 afl-fuzz 不使用快照功能，如果加载了快照 lkm。
+
+  - 设置 `AFL_NO_UI` 将完全禁止 UI，并只定期打印一些基本的统计信息。当 afl-fuzz 的输出被重定向到文件或管道时，这种行为也会自动触发。
+
+  - 设置 `AFL_NO_STARTUP_CALIBRATION` 将跳过所有起始种子的初始校准，并立即开始模糊测试。小心使用，这会降低模糊测试的性能！
+
+  - 设置 `AFL_NO_WARN_INSTABILITY` 将抑制不稳定性警告。
+
+  - 在 QEMU 模式（-Q）和 FRIDA 模式（-O）中，`AFL_PATH` 将被搜索 afl-qemu-trace 和 afl-frida-trace.so。
+
+  - 如果你正在使用持久模式（你应该看看 [instrumentation/README.persistent_mode.md](../instrumentation/README.persistent_mode.md)），一些目标保持固有状态，因此检测到的崩溃测试用例在给出测试用例时不会再次崩溃目标。为了能够重新触发这些崩溃，你可以使用 `AFL_PERSISTENT_RECORD` 变量，该变量的值为崩溃前保留多少个先前的模糊用例。如果设置为例如 10，那么前 9 个输入将被写入 out/default/crashes 作为 RECORD:000000,cnt:000000 到 RECORD:000000,cnt:000008 和 RECORD:000000,cnt:000009 是崩溃用例。注意：这个选项需要首先在 config.h 中启用！
+
+  - 注意 `AFL_POST_LIBRARY` 已被弃用，改用 `AFL_CUSTOM_MUTATOR_LIBRARY`。
+
+  - 设置 `AFL_PRELOAD` 会导致 AFL++ 为目标二进制文件设置 `LD_PRELOAD`，而不会干扰 afl-fuzz 进程本身。这在其他事情中很有用，例如引导 libdislocator.so。
+
+  - 在 QEMU 模式（-Q）中，设置 `AFL_QEMU_CUSTOM_BIN` 将导致 afl-fuzz 跳过在你的命令行前添加 `afl-qemu-trace`。如果你希望使用自定义的 afl-qemu-trace 或者需要修改 afl-qemu-trace 的参数，使用这个。
+
+  - `AFL_SHUFFLE_QUEUE` 在启动时随机重新排序输入队列。一些用户为了非正统的并行模糊测试设置而请求，但否则不建议这样做。
+
+  - 在 afl-fuzz 之上开发自定义工具时，你可以使用 `AFL_SKIP_BIN_CHECK` 来抑制对非工具二进制文件和 shell 脚本的检查；并且可以结合 `-n` 设置使用 `AFL_DUMB_FORKSRV` 来指示 afl-fuzz 仍然遵循 fork server 协议，而不期望返回任何工具数据。注意，这也会关闭自动映射大小检测。
+
+  - 设置 `AFL_SKIP_CPUFREQ` 跳过对 CPU 缩放策略的检查。如果你不能改变默认设置（例如，没有系统的 root 访问权限）并且可以接受一些性能损失，这是有用的。
+
+  - 设置 `AFL_STATSD` 启用 StatsD 指标收集。默认情况下，AFL++ 将通过 UDP 向 127.0.0.1:8125 发送这些指标。主机和端口可以分别通过 `AFL_STATSD_HOST` 和 `AFL_STATSD_PORT` 进行配置。要启用标签（banner 和 afl_version），你应该提供与你的 StatsD 服务器匹配的 `AFL_STATSD_TAGS_FLAVOR`（参见 `AFL_STATSD_TAGS_FLAVOR`）。
+
+  - 将 `AFL_STATSD_TAGS_FLAVOR` 设置为 `dogstatsd`、`influxdb`、`librato` 或 `signalfx` 中的一个，允许你为你的模糊实例添加标签。这在运行多个实例时特别有用（例如 `-M/-S`）。应用的标签是 `banner` 和 `afl_version`。`banner` 对应于通过 `-M/-S` 提供的模糊器的名称。`afl_version` 对应于当前运行的 AFL++ 版本（例如 `++3.0c`）。默认（空/不存在）将不会向指标添加标签。有关更多信息，请参见 [rpc_statsd.md](rpc_statsd.md)。
+
+  - `AFL_SYNC_TIME` 允许你指定模糊实例同步之间的不同最小时间（以分钟为单位）。默认同步时间是 30 分钟，注意对于 -M 主节点，时间减半。
+
+  - 设置 `AFL_TARGET_ENV` 会导致 AFL++ 为目标二进制文件设置额外的环境变量。示例：`AFL_TARGET_ENV="VAR1=1 VAR2='a b c'" afl-fuzz ... `。这主要存在于像 `LD_LIBRARY_PATH` 这样的事情，但理论上它可以允许模糊测试 AFL++ 本身（使用一些 AFL_ 变量的 'target' AFL++ 会破坏 'fuzzer' AFL++ 的工作）。注意，当使用 QEMU 模式时，`AFL_TARGET_ENV` 环境变量将适用于 QEMU，以及目标二进制文件。因此，在这种情况下，你可能希望使用 QEMU 的 `QEMU_SET_ENV` 环境变量（参见 QEMU 的文档，因为格式与 `AFL_TARGET_ENV` 不同）来将环境变量应用到目标而不是 QEMU。
+
+  - `AFL_TESTCACHE_SIZE` 允许你覆盖 config.h 中 `#define TESTCASE_CACHE` 的大小。推荐的值是 50-250MB - 或者如果你的模糊测试找到了大量的路径用于大输入，那么更多。
+
+  - `AFL_TMPDIR` 用于写入 `.cur_input` 文件（如果存在），否则在正常的输出目录中。你可以使用这个来指向 ramdisk/tmpfs。这会增加一小部分速度，但也会减少 SSD 的压力。
+
+  - 设置 `AFL_TRY_AFFINITY` 尝试尝试在 Linux 系统上绑定到特定的 CPU 核心，但如果失败不会终止。
+
+  - 以下环境变量只有在你实现了自己的 forkserver 或持久模式，或者如果 __AFL_LOOP 或 __AFL_INIT 在共享库中而不是主二进制文件中时才需要：
+    - `AFL_DEFER_FORKSRV` 强制延迟 forkserver，即使在目标二进制文件中没有检测到
+    - `AFL_PERSISTENT` 强制持久模式，即使在目标二进制文件中没有检测到
+
+  - 如果你的目标中需要一个早期的 forkserver，因为你的目标中有早期的构造函数，你可以设置 `AFL_EARLY_FORKSERVER`。注意，这不是一个编译时选项，而是一个运行时选项 :-)
+
+  - 将 `AFL_PIZZA_MODE` 设置为 1 以启用 4 月 1 日的统计菜单，即使是 4 月 1 日也设置为 -1 以禁用。0 是默认值，意味着在 4 月 1 日自动启用。
+
+  - 如果你需要一个特定的间隔来更新 fuzzer_stats 文件，你可以将 `AFL_FUZZER_STATS_UPDATE_INTERVAL` 设置为你希望文件更新的秒数间隔。请注意，这不会是准确的，对于慢目标，可能需要几秒钟才能有时间测试的切片。
 ## 5) Settings for afl-qemu-trace
 
 The QEMU wrapper used to instrument binary-only code supports several settings:
@@ -807,6 +1009,17 @@ The corpus minimization script offers very little customization:
   - `AFL_PRINT_FILENAMES` prints each filename to stdout, as it gets processed.
     This can help when embedding `afl-cmin` or `afl-showmap` in other scripts.
 
+## 8) afl-cmin 的设置
+
+语料库最小化脚本提供的自定义选项非常少：
+
+  - `AFL_ALLOW_TMP` 允许此脚本和一些其他脚本在 /tmp 中运行。这在具有恶意用户的多用户系统上是一个适度的安全风险，但在专用的模糊测试箱上应该是安全的。
+
+  - `AFL_KEEP_TRACES` 使工具保留用于最小化的跟踪和其他元数据，并通常在退出时删除。文件可以在 `<out_dir>/.traces/` 目录中找到。
+
+  - 设置 `AFL_PATH` 提供了一种指定 afl-showmap 和 afl-qemu-trace（后者仅在 `-Q` 模式下）位置的方法。
+
+  - `AFL_PRINT_FILENAMES` 在处理时将每个文件名打印到 stdout。这在将 `afl-cmin` 或 `afl-showmap` 嵌入到其他脚本中时可能有所帮助。
 ## 9) Settings for afl-tmin
 
 Virtually nothing to play with. Well, in QEMU mode (`-Q`), `AFL_PATH` will be
@@ -817,6 +1030,12 @@ You can specify `AFL_TMIN_EXACT` if you want afl-tmin to require execution paths
 to match when minimizing crashes. This will make minimization less useful, but
 may prevent the tool from "jumping" from one crashing condition to another in
 very buggy software. You probably want to combine it with the `-e` flag.
+
+## 9) afl-tmin 的设置
+
+实际上没有什么可设置的。在 QEMU 模式（`-Q`）下，将搜索 `AFL_PATH` 以查找 afl-qemu-trace。此外，如果无法在当前工作目录中创建临时文件，可能会使用 `TMPDIR`。
+
+如果你希望 afl-tmin 在最小化崩溃时要求执行路径匹配，你可以指定 `AFL_TMIN_EXACT`。这将使最小化变得不那么有用，但可能防止工具在非常有问题的软件中从一个崩溃条件"跳跃"到另一个崩溃条件。你可能希望将其与 `-e` 标志结合使用。
 
 ## 10) Settings for afl-analyze
 
