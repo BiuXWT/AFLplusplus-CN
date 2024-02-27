@@ -89,6 +89,7 @@ L. Faster fuzzing and less kernel syscall overhead by in-memory fuzz testcase
 11. Coresight mode is only available on AARCH64 Linux with a CPU with Coresight
     extension
 12. Nyx mode is only supported on Linux and currently restricted to x86_x64
+
 ----
 1. 对于LLVM >= 9.0，默认设置。对于旧版本，由于之前的llvm版本存在效率问题，需要设置环境变量。
 2. GCC创建的代码性能不佳，因此在gcc_plugin中被禁用。

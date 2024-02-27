@@ -4,19 +4,11 @@
 
 ### Targets
 
-- [Best practices](#best-practices)
-  - [Contents](#contents)
-    - [Targets](#targets)
-    - [Improvements](#improvements)
-  - [Targets](#targets-1)
-    - [Fuzzing a target with source code available](#fuzzing-a-target-with-source-code-available)
-    - [Fuzzing a target with dlopen instrumented libraries](#fuzzing-a-target-with-dlopen-instrumented-libraries)
-    - [Fuzzing a binary-only target](#fuzzing-a-binary-only-target)
-    - [Fuzzing a GUI program](#fuzzing-a-gui-program)
-    - [Fuzzing a network service](#fuzzing-a-network-service)
-  - [Improvements](#improvements-1)
-    - [Improving speed](#improving-speed)
-    - [Improving stability](#improving-stability)
+* [Fuzzing a target with source code available](#fuzzing-a-target-with-source-code-available)
+* [Fuzzing a target with dlopen() instrumented libraries](#fuzzing-a-target-with-dlopen-instrumented-libraries)
+* [Fuzzing a binary-only target](#fuzzing-a-binary-only-target)
+* [Fuzzing a GUI program](#fuzzing-a-gui-program)
+* [Fuzzing a network service](#fuzzing-a-network-service)
 
 ### Improvements
 

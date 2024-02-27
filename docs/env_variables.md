@@ -3,12 +3,12 @@
   This document discusses the environment variables used by AFL++ to expose
   various exotic functions that may be (rarely) useful for power users or for
   some types of custom fuzzing setups. For general information about AFL++, see
-  [README.md](../README.md).  
+  [README.md](../README.md).
   本文档讨论了AFL++ 所使用的环境变量，以公开各种奇特的函数，这些函数可能对高级用户或某些类型的自定义模糊设置有用。 [README.md](../README.md).  
 
   Note: Most tools will warn on any unknown AFL++ environment variables; for
   example, because of typos. If you want to disable this check, then set the
-  `AFL_IGNORE_UNKNOWN_ENVS` environment variable.  
+  `AFL_IGNORE_UNKNOWN_ENVS` environment variable.
   注意：afl++ 大多数工具会对任何未知的 AFL++ 环境变量发出警告；例如，由于拼写错误。如果你想禁用这个检查，那么设置 `AFL_IGNORE_UNKNOWN_ENVS` 环境变量。
 
 ## 1) Settings for all compilers
