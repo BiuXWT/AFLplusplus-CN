@@ -707,9 +707,10 @@ checks or alter some of the more exotic semantics of the tool:
     Note that will not be exact and with slow targets it can take seconds
     until there is a slice for the time test.
 
-`afl-fuzz`二进制文件接受几个选项，这些选项可以禁用一些完整性检查或改变工具的一些更奇特的语义：
+## 4) afl-fuzz的设置
+`afl-fuzz`二进制文件接受几个选项，这些选项可以禁用一些完整性检查或改变工具的一些奇特（外来）的语义：
 
-  - 设置`AFL_AUTORESUME`将恢复模糊运行（与提供`-i -`相同）对于现有的out文件夹，即使提供了不同的`-i`。没有这个设置，afl-fuzz将拒绝执行长时间模糊的out目录。
+  - 设置`AFL_AUTORESUME`将恢复模糊运行（与提供`-i -`相同）对于现有的out文件夹，即使提供了不同的`-i`。在已经存在长时间测试过的out目录的测试中，没有这个设置，afl-fuzz将拒绝执行
 
   - 仅用于基准测试：`AFL_BENCH_JUST_ONE`会导致模糊器在处理完第一个队列条目后退出；`AFL_BENCH_UNTIL_CRASH`会导致它在找到第一个崩溃后很快退出。
 
